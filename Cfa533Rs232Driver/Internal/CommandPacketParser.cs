@@ -2,7 +2,7 @@
 
 namespace petrsnd.Cfa533Rs232Driver.Internal
 {
-    static class CommandPacketParser
+    internal static class CommandPacketParser
     {
         public static CommandPacket Parse(byte[] data)
         {

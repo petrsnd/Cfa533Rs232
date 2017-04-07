@@ -4,9 +4,9 @@ using System.Text;
 
 namespace petrsnd.Cfa533Rs232Driver.Internal
 {
-    class SerialConnection : IDisposable
+    internal class SerialConnection : IDisposable
     {
-        private string _serialPortName;
+        private readonly string _serialPortName;
         private int _baudRate;
         private SerialPort _serialPort;
 
@@ -39,6 +39,13 @@ namespace petrsnd.Cfa533Rs232Driver.Internal
             {
                 // TODO: throw something here
             }
+        }
+
+        public void Reconnect(int baudRate)
+        {
+            _baudRate = baudRate;
+            Disconnect();
+            Connect();
         }
 
         public void Disconnect()
@@ -82,6 +89,21 @@ namespace petrsnd.Cfa533Rs232Driver.Internal
             var recvBuffer = new byte[numBytes];
             _serialPort.Read(recvBuffer, 0, numBytes);
             var packet = CommandPacketParser.Parse(recvBuffer);
+            switch (packet.PacketType)
+            {
+                case PacketType.NormalCommand:
+                    // TODO: throw
+                    break;
+                case PacketType.NormalResponse:
+                    // TODO: handle reponse with event
+                    break;
+                case PacketType.NormalReport:
+                    // TODO: handle report with event
+                    break;
+                case PacketType.ErrorResponse:
+                    // TODO: throw
+                    break;
+            }
         }
 
         private static void ErrorReceivedHandler(object sender, SerialErrorReceivedEventArgs e)

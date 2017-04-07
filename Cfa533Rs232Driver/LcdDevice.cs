@@ -1,5 +1,4 @@
 ﻿using System;
-using System.IO.Ports;
 
 namespace petrsnd.Cfa533Rs232Driver
 {

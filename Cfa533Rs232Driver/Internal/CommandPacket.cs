@@ -1,22 +1,35 @@
-﻿using System.Runtime.Remoting;
-
-namespace petrsnd.Cfa533Rs232Driver.Internal
+﻿namespace petrsnd.Cfa533Rs232Driver.Internal
 {
-    class CommandPacket
+    internal class CommandPacket
     {
-        public CommandPacket(CommandType type)
+        public CommandPacket(byte type)
         {
             Type = type;
         }
+        public CommandPacket(CommandType type)
+        {
+            Type = (byte)type;
+        }
 
-        public CommandPacket(CommandType type, byte dataLength, byte[] data)
+        public CommandPacket(byte type, byte dataLength, byte[] data)
         {
             Type = type;
             DataLength = dataLength;
             Data = data;
         }
 
-        public CommandType Type { get; set; }
+        public CommandPacket(CommandType type, byte dataLength, byte[] data)
+        {
+            Type = (byte)type;
+            DataLength = dataLength;
+            Data = data;
+        }
+
+        public byte Type { get; set; }
+
+        public PacketType PacketType => (PacketType)(Type >> 6);
+
+        public CommandType CommandType => (CommandType)(Type & 0x3F);
 
         public byte DataLength { get; set; }
 
