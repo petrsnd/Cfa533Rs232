@@ -43,10 +43,14 @@
     <Compile Include="CursorStyle.cs" />
     <Compile Include="Internal\CommandPacket.cs" />
     <Compile Include="Internal\CommandPacketParser.cs" />
+    <Compile Include="Internal\CommandPacketResponseReceivedEventArgs.cs" />
     <Compile Include="Internal\CommandType.cs" />
+    <Compile Include="Internal\InternalExtensions.cs" />
     <Compile Include="Internal\PacketType.cs" />
-    <Compile Include="Internal\SerialConnection.cs" />
+    <Compile Include="Internal\Cfa533Rs232Connection.cs" />
     <Compile Include="KeyFlags.cs" />
+    <Compile Include="KeypadAction.cs" />
+    <Compile Include="KeypadEventArgs.cs" />
     <Compile Include="LcdBaudRate.cs" />
     <Compile Include="LcdDevice.cs" />
     <Compile Include="LocationCode.cs" />

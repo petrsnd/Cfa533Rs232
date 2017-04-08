@@ -1,4 +1,5 @@
 ﻿using System;
+using petrsnd.Cfa533Rs232Driver.Internal;
 
 namespace petrsnd.Cfa533Rs232Driver
 {
@@ -6,6 +7,7 @@ namespace petrsnd.Cfa533Rs232Driver
     {
         private string _serialPortName;
         private int _baudRate;
+        private Cfa533Rs232Connection _deviceConnection;
 
         public LcdDevice(string serialPortName, LcdBaudRate baudRate)
         {
@@ -28,12 +30,27 @@ namespace petrsnd.Cfa533Rs232Driver
 
         public void Connect()
         {
-            
+            if (Connected)
+                Disconnect();
         }
+
+        public bool Connected => _deviceConnection != null && _deviceConnection.Connected;
+
+        public void Disconnect()
+        {
+            if (_deviceConnection == null)
+                return;
+            _deviceConnection.Disconnect();
+            _deviceConnection.Dispose();
+            _deviceConnection = null;
+        }
+
+        public EventHandler<KeypadEventArgs> KeypadActivity; 
 
         public bool Ping()
         {
-            throw new NotImplementedException();
+            return _deviceConnection?.SendReceive(new CommandPacket(CommandType.Ping)).PacketType ==
+                   PacketType.NormalResponse;
         }
 
         public string GetHardwareFirmwareVersion()
