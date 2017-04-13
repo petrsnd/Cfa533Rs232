@@ -105,9 +105,9 @@ namespace petrsnd.Cfa533Rs232Driver.Internal
         {
             if (_serialPort == null)
                 return;
-            _serialPort.PinChanged += null;
-            _serialPort.DataReceived += null;
-            _serialPort.ErrorReceived += null;
+            _serialPort.PinChanged += PinChangeHandler;
+            _serialPort.DataReceived += DataReceivedHandler;
+            _serialPort.ErrorReceived += ErrorReceivedHandler;
         }
 
         private void DisconnectHandlers()
