@@ -36,10 +36,11 @@ namespace petrsnd.Cfa533Rs232Driver.Internal
                 };
                 ConnectHandlers();
                 _serialPort.Open();
+
             }
             catch (Exception ex)
             {
-                // TODO: throw something here
+                throw new DeviceConnectionException("Unable to connect to LCD device", ex);
             }
         }
 
@@ -82,7 +83,7 @@ namespace petrsnd.Cfa533Rs232Driver.Internal
                     {
                         t.Wait();
                         if (t.Result == null)
-                            throw new Exception(); // TODO: fix me
+                            throw new DeviceTimeoutException("Timeout while waiting for LCD device response");
                         return t.Result;
                     }
                 }
@@ -90,16 +91,14 @@ namespace petrsnd.Cfa533Rs232Driver.Internal
             }
             catch (AggregateException ex)
             {
-                // TODO: throw?
+                throw new DeviceCommandException($"Command '{command.CommandType}' failed", ex.Flatten());
             }
-
-            return null;
         }
 
         private void ThrowIfNotConnected()
         {
             if (!Connected)
-                throw new Exception(); // TODO: real exception
+                throw new DeviceConnectionException("LCD device is not connected");
         }
 
         private void ConnectHandlers()
@@ -136,8 +135,7 @@ namespace petrsnd.Cfa533Rs232Driver.Internal
             switch (packet.PacketType)
             {
                 case PacketType.NormalCommand:
-                    // TODO: throw -- shouldn't be here, only from client to device
-                    break;
+                    throw new DeviceResponseException("Invalid response from LCD device -- normal bits set");
                 case PacketType.NormalResponse:
                     ResponseReceived?.Invoke(this, new CommandPacketResponseReceivedEventArgs(packet));
                     break;
@@ -150,11 +148,9 @@ namespace petrsnd.Cfa533Rs232Driver.Internal
                     // TODO: handle temperature report with event
                     break;
                 case PacketType.ErrorResponse:
-                    // TODO: throw
-                    break;
+                    throw new DeviceResponseException($"Error returned from LCD device '{packet.CommandType}'");
                 default:
-                    // TODO: throw something here
-                    break;
+                    throw new DeviceResponseException("Unknown response packet type from LCD device");
             }
         }
 

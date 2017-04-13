@@ -17,21 +17,15 @@ namespace petrsnd.Cfa533Rs232Driver
 
         private int ConvertLcdBaudRateToInt(LcdBaudRate baudRate)
         {
-            switch (baudRate)
-            {
-                case LcdBaudRate.Baud115200:
-                    return 115200;
-                case LcdBaudRate.Baud19200:
-                    return 19200;
-                default:
-                    return 19200;
-            }
+            return (int)baudRate;
         }
 
         public void Connect()
         {
             if (Connected)
                 Disconnect();
+            _deviceConnection = new Cfa533Rs232Connection(_serialPortName, _baudRate);
+            _deviceConnection.Connect();
         }
 
         public bool Connected => _deviceConnection != null && _deviceConnection.Connected;
@@ -197,7 +191,7 @@ namespace petrsnd.Cfa533Rs232Driver
 
         public void Dispose()
         {
-            throw new NotImplementedException();
+            Disconnect();
         }
     }
 }

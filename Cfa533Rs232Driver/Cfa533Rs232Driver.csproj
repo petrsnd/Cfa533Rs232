@@ -41,6 +41,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CursorStyle.cs" />
+    <Compile Include="PacketParseException.cs" />
+    <Compile Include="DeviceConnectionException.cs" />
+    <Compile Include="DeviceCommandException.cs" />
+    <Compile Include="DeviceTimeoutException.cs" />
+    <Compile Include="DeviceResponseException.cs" />
     <Compile Include="Internal\CommandPacket.cs" />
     <Compile Include="Internal\CommandPacketParser.cs" />
     <Compile Include="Internal\CommandPacketResponseReceivedEventArgs.cs" />

@@ -2,7 +2,8 @@
 {
     public enum LcdBaudRate
     {
-        Baud19200 = 0,
-        Baud115200 = 1
+        Baud9600 = 9600,
+        Baud19200 = 19200,
+        Baud115200 = 115200
     }
 }

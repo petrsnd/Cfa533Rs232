@@ -1,15 +1,39 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using petrsnd.Cfa533Rs232Driver;
 
 namespace Cfa533Rs232Tool
 {
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        public static int Main(string[] args)
         {
+            if (args.Any())
+            {
+                using (var device = new LcdDevice("COM3", LcdBaudRate.Baud9600))
+                {
+                    device.Connect();
+                    switch (args[0])
+                    {
+                        case "ping":
+                            var success = device.Ping();
+                            Console.WriteLine($"Ping was {(success ? "successful" : "unsuccessful")}");
+                            return success ? 0 : 1;
+                        case "listen":
+                            Console.WriteLine("Press any key to stop listening...");
+                            Console.ReadKey();
+                            return 0;
+                        default:
+                            Console.WriteLine($"Unrecognized command '{args[0]}'");
+                            return 1;
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("Support commands: ping, listen");
+                return 0;
+            }
         }
     }
 }
