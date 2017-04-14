@@ -5,7 +5,7 @@ namespace petrsnd.Cfa533Rs232Driver
 {
     public class LcdDevice : IDisposable
     {
-        private string _serialPortName;
+        private readonly string _serialPortName;
         private int _baudRate;
         private Cfa533Rs232Connection _deviceConnection;
 
@@ -26,6 +26,7 @@ namespace petrsnd.Cfa533Rs232Driver
                 Disconnect();
             _deviceConnection = new Cfa533Rs232Connection(_serialPortName, _baudRate);
             _deviceConnection.Connect();
+            _deviceConnection.KeypadActivity += KeyboardActivityProxy;
         }
 
         public bool Connected => _deviceConnection != null && _deviceConnection.Connected;
@@ -34,12 +35,18 @@ namespace petrsnd.Cfa533Rs232Driver
         {
             if (_deviceConnection == null)
                 return;
+            _deviceConnection.KeypadActivity -= KeyboardActivityProxy;
             _deviceConnection.Disconnect();
             _deviceConnection.Dispose();
             _deviceConnection = null;
         }
 
-        public EventHandler<KeypadEventArgs> KeypadActivity; 
+        public EventHandler<KeypadEventArgs> KeypadActivity;
+
+        private void KeyboardActivityProxy(object sender, KeypadEventArgs args)
+        {
+            KeypadActivity?.Invoke(sender, args);
+        }
 
         public bool Ping()
         {

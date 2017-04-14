@@ -10,7 +10,7 @@ namespace Cfa533Rs232Tool
         {
             if (args.Any())
             {
-                using (var device = new LcdDevice("COM3", LcdBaudRate.Baud9600))
+                using (var device = new LcdDevice("COM3", LcdBaudRate.Baud19200))
                 {
                     device.Connect();
                     switch (args[0])
@@ -21,7 +21,14 @@ namespace Cfa533Rs232Tool
                             return success ? 0 : 1;
                         case "listen":
                             Console.WriteLine("Press any key to stop listening...");
+                            EventHandler<KeypadEventArgs> eventHandler =
+                                delegate (object sender, KeypadEventArgs eventArgs)
+                                {
+                                    Console.WriteLine($"Keyboard Event: {eventArgs.KeypadAction}");
+                                };
+                            device.KeypadActivity += eventHandler;
                             Console.ReadKey();
+                            device.KeypadActivity -= eventHandler;
                             return 0;
                         default:
                             Console.WriteLine($"Unrecognized command '{args[0]}'");

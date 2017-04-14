@@ -29,7 +29,15 @@
 
         public PacketType PacketType => (PacketType)(Type >> 6);
 
-        public CommandType CommandType => (CommandType)(Type & 0x3F);
+        public CommandType CommandType
+        {
+            get
+            {
+                if (PacketType == PacketType.NormalReport)
+                    return (CommandType)Type;
+                return (CommandType)(Type & 0x3F);
+            }
+        }
 
         public byte DataLength { get; set; }
 

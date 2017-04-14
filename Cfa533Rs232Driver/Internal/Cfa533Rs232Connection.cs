@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.IO.Ports;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace petrsnd.Cfa533Rs232Driver.Internal
@@ -10,6 +13,7 @@ namespace petrsnd.Cfa533Rs232Driver.Internal
         private readonly string _serialPortName;
         private int _baudRate;
         private SerialPort _serialPort;
+        private Queue<byte> _readBuffer = new Queue<byte>(20);
         private readonly object _locker = new object();
 
         public Cfa533Rs232Connection(string serialPortName, int baudRate)
@@ -124,33 +128,57 @@ namespace petrsnd.Cfa533Rs232Driver.Internal
             // TODO: log this stuff I guess...
         }
 
-        private event EventHandler<CommandPacketResponseReceivedEventArgs> ResponseReceived; 
+        private event EventHandler<CommandPacketResponseReceivedEventArgs> ResponseReceived;
+
+        private CommandPacket TryParsePacket()
+        {
+            try
+            {
+                var packet = CommandPacketParser.Parse(_readBuffer.ToArray());
+                if (packet == null)
+                    return null;
+                for (var i = 0; i < packet.PacketSizeWithCrc; i++)
+                    _readBuffer.Dequeue();
+                return packet;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
 
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
-            var numBytes = _serialPort.BytesToRead;
-            var recvBuffer = new byte[numBytes];
-            _serialPort.Read(recvBuffer, 0, numBytes);
-            var packet = CommandPacketParser.Parse(recvBuffer);
-            switch (packet.PacketType)
+            while (_serialPort.BytesToRead > 0)
             {
-                case PacketType.NormalCommand:
-                    throw new DeviceResponseException("Invalid response from LCD device -- normal bits set");
-                case PacketType.NormalResponse:
-                    ResponseReceived?.Invoke(this, new CommandPacketResponseReceivedEventArgs(packet));
+                var b = (byte) _serialPort.ReadByte();
+                _readBuffer.Enqueue(b);
+            }
+            while (true)
+            {
+                var packet = TryParsePacket();
+                if (packet == null)
                     break;
-                case PacketType.NormalReport:
-                    if (packet.CommandType == CommandType.KeyActivity)
-                    {
-                        var action = (KeypadAction)packet.Data[0];
-                        KeypadActivity?.Invoke(this, new KeypadEventArgs(action.ConvertToKeyFlags(), action));
-                    }
-                    // TODO: handle temperature report with event
-                    break;
-                case PacketType.ErrorResponse:
-                    throw new DeviceResponseException($"Error returned from LCD device '{packet.CommandType}'");
-                default:
-                    throw new DeviceResponseException("Unknown response packet type from LCD device");
+                switch (packet.PacketType)
+                {
+                    case PacketType.NormalCommand:
+                        throw new DeviceResponseException("Invalid response from LCD device -- normal bits set");
+                    case PacketType.NormalResponse:
+                        ResponseReceived?.Invoke(this, new CommandPacketResponseReceivedEventArgs(packet));
+                        break;
+                    case PacketType.NormalReport:
+                        if (packet.CommandType == CommandType.KeyActivity)
+                        {
+                            var action = (KeypadAction) packet.Data[0];
+                            KeypadActivity?.Invoke(this, new KeypadEventArgs(action.ConvertToKeyFlags(), action));
+                        }
+                        // TODO: handle temperature report with event
+                        break;
+                    case PacketType.ErrorResponse:
+                        throw new DeviceResponseException($"Error returned from LCD device '{packet.CommandType}'");
+                    default:
+                        throw new DeviceResponseException("Unknown response packet type from LCD device");
+                }
             }
         }
 
