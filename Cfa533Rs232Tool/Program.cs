@@ -16,7 +16,7 @@ namespace Cfa533Rs232Tool
                     switch (args[0])
                     {
                         case "ping":
-                            var success = device.Ping();
+                            var success = device.Ping(args.Length > 1 ? args[1] : "");
                             Console.WriteLine($"Ping was {(success ? "successful" : "unsuccessful")}");
                             return success ? 0 : 1;
                         case "listen":

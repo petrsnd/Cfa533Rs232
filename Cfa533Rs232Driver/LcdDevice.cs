@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Linq;
+using System.Text;
 using petrsnd.Cfa533Rs232Driver.Internal;
 
 namespace petrsnd.Cfa533Rs232Driver
@@ -48,10 +50,13 @@ namespace petrsnd.Cfa533Rs232Driver
             KeypadActivity?.Invoke(sender, args);
         }
 
-        public bool Ping()
+        public bool Ping(string data)
         {
-            return _deviceConnection?.SendReceive(new CommandPacket(CommandType.Ping)).PacketType ==
-                   PacketType.NormalResponse;
+            if (!Connected) return false;
+            var command = new CommandPacket(CommandType.Ping, (byte) data.Length, Encoding.ASCII.GetBytes(data));
+            var response = _deviceConnection?.SendReceive(command);
+            return response?.PacketType == PacketType.NormalResponse && response.CommandType == CommandType.Ping &&
+                   response.Data.SequenceEqual(command.Data);
         }
 
         public string GetHardwareFirmwareVersion()
