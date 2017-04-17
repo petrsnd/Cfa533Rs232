@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO.Ports;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 
-namespace petrsnd.Cfa533Rs232Driver.Internal
+namespace Petrsnd.Cfa533Rs232Driver.Internal
 {
     internal class Cfa533Rs232Connection : IDisposable
     {
@@ -67,7 +65,7 @@ namespace petrsnd.Cfa533Rs232Driver.Internal
 
         public bool Connected => _serialPort != null && _serialPort.IsOpen;
 
-        public EventHandler<KeypadEventArgs> KeypadActivity; 
+        public event EventHandler<KeypadActivityEventArgs> KeypadActivity; 
 
         public CommandPacket SendReceive(CommandPacket command)
         {
@@ -143,6 +141,7 @@ namespace petrsnd.Cfa533Rs232Driver.Internal
             }
             catch (Exception ex)
             {
+                // TODO: log
                 return null;
             }
         }
@@ -170,7 +169,7 @@ namespace petrsnd.Cfa533Rs232Driver.Internal
                         if (packet.CommandType == CommandType.KeyActivity)
                         {
                             var action = (KeypadAction) packet.Data[0];
-                            KeypadActivity?.Invoke(this, new KeypadEventArgs(action.ConvertToKeyFlags(), action));
+                            KeypadActivity?.Invoke(this, new KeypadActivityEventArgs(action.ConvertToKeyFlags(), action));
                         }
                         // TODO: handle temperature report with event
                         break;
@@ -200,8 +199,10 @@ namespace petrsnd.Cfa533Rs232Driver.Internal
                     eventWaiter.SetResult(true);
                 };
             ResponseReceived += eventHandler;
-            var ret = await Task.WhenAny(eventWaiter.Task, Task.Delay(timeout)) == eventWaiter.Task;
+            var completedTask = await Task.WhenAny(eventWaiter.Task, Task.Delay(timeout));
             ResponseReceived -= eventHandler;
+            if (completedTask != eventWaiter.Task)
+                throw new DeviceTimeoutException($"A timeout occurred before '{commandType}' command completed");
             return response;
         }
 

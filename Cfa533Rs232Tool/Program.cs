@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Linq;
-using petrsnd.Cfa533Rs232Driver;
+using Petrsnd.Cfa533Rs232Driver;
 
 namespace Cfa533Rs232Tool
 {
@@ -21,8 +21,8 @@ namespace Cfa533Rs232Tool
                             return success ? 0 : 1;
                         case "listen":
                             Console.WriteLine("Press any key to stop listening...");
-                            EventHandler<KeypadEventArgs> eventHandler =
-                                delegate (object sender, KeypadEventArgs eventArgs)
+                            EventHandler<KeypadActivityEventArgs> eventHandler =
+                                delegate (object sender, KeypadActivityEventArgs eventArgs)
                                 {
                                     Console.WriteLine($"Keyboard Event: {eventArgs.KeypadAction}");
                                 };

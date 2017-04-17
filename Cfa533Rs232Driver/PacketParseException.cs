@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.Serialization;
 
-namespace petrsnd.Cfa533Rs232Driver
+namespace Petrsnd.Cfa533Rs232Driver
 {
     public class PacketParseException : Exception
     {

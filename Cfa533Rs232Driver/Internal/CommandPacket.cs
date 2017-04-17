@@ -1,4 +1,4 @@
-﻿namespace petrsnd.Cfa533Rs232Driver.Internal
+﻿namespace Petrsnd.Cfa533Rs232Driver.Internal
 {
     internal class CommandPacket
     {
@@ -67,7 +67,7 @@
         private byte[] GetPacketBufferWithoutCrc()
         {
             var buffer = new byte[PacketSizeWithCrc];
-            buffer[0] = (byte)Type;
+            buffer[0] = Type;
             buffer[1] = DataLength;
             if (DataLength > 0)
                 Data.CopyTo(buffer, 2);

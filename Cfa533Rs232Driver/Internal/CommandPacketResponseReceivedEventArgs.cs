@@ -1,4 +1,4 @@
-﻿namespace petrsnd.Cfa533Rs232Driver.Internal
+﻿namespace Petrsnd.Cfa533Rs232Driver.Internal
 {
     internal class CommandPacketResponseReceivedEventArgs
     {

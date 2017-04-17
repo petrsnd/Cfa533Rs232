@@ -7,7 +7,7 @@
     <ProjectGuid>{D4265574-93AF-4C7A-B6C9-83C1A6B3C245}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>petrsnd.Cfa533Rs232Driver</RootNamespace>
+    <RootNamespace>Petrsnd.Cfa533Rs232Driver</RootNamespace>
     <AssemblyName>Cfa533Rs232Driver</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -55,7 +55,7 @@
     <Compile Include="Internal\Cfa533Rs232Connection.cs" />
     <Compile Include="KeyFlags.cs" />
     <Compile Include="KeypadAction.cs" />
-    <Compile Include="KeypadEventArgs.cs" />
+    <Compile Include="KeypadActivityEventArgs.cs" />
     <Compile Include="LcdBaudRate.cs" />
     <Compile Include="LcdDevice.cs" />
     <Compile Include="LocationCode.cs" />

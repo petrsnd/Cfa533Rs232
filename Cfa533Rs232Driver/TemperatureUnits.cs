@@ -1,4 +1,4 @@
-﻿namespace petrsnd.Cfa533Rs232Driver
+﻿namespace Petrsnd.Cfa533Rs232Driver
 {
     public enum TemperatureUnits
     {

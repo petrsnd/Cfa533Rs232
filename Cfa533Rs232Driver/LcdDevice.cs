@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using petrsnd.Cfa533Rs232Driver.Internal;
+using Petrsnd.Cfa533Rs232Driver.Internal;
 
-namespace petrsnd.Cfa533Rs232Driver
+namespace Petrsnd.Cfa533Rs232Driver
 {
     public class LcdDevice : IDisposable
     {
@@ -17,7 +17,7 @@ namespace petrsnd.Cfa533Rs232Driver
             _baudRate = ConvertLcdBaudRateToInt(baudRate);
         }
 
-        private int ConvertLcdBaudRateToInt(LcdBaudRate baudRate)
+        private static int ConvertLcdBaudRateToInt(LcdBaudRate baudRate)
         {
             return (int)baudRate;
         }
@@ -43,9 +43,9 @@ namespace petrsnd.Cfa533Rs232Driver
             _deviceConnection = null;
         }
 
-        public EventHandler<KeypadEventArgs> KeypadActivity;
+        public event EventHandler<KeypadActivityEventArgs> KeypadActivity;
 
-        private void KeyboardActivityProxy(object sender, KeypadEventArgs args)
+        private void KeyboardActivityProxy(object sender, KeypadActivityEventArgs args)
         {
             KeypadActivity?.Invoke(sender, args);
         }

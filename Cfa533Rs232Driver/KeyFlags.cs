@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace petrsnd.Cfa533Rs232Driver
+namespace Petrsnd.Cfa533Rs232Driver
 {
     [Flags]
     public enum KeyFlags : byte

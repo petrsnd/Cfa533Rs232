@@ -1,8 +1,8 @@
-﻿namespace petrsnd.Cfa533Rs232Driver
+﻿namespace Petrsnd.Cfa533Rs232Driver
 {
-    public class KeypadEventArgs
+    public class KeypadActivityEventArgs
     {
-        public KeypadEventArgs(KeyFlags key, KeypadAction action)
+        public KeypadActivityEventArgs(KeyFlags key, KeypadAction action)
         {
             Key = key;
             KeypadAction = action;
