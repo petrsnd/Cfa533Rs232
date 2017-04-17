@@ -52,7 +52,10 @@ namespace Petrsnd.Cfa533Rs232Driver
 
         public bool Ping(string data)
         {
-            if (!Connected) return false;
+            if (!Connected)
+                return false;
+            if (data == null)
+                data = "";
             var command = new CommandPacket(CommandType.Ping, (byte) data.Length, Encoding.ASCII.GetBytes(data));
             var response = _deviceConnection?.SendReceive(command);
             return response?.PacketType == PacketType.NormalResponse && response.CommandType == CommandType.Ping &&
@@ -61,7 +64,11 @@ namespace Petrsnd.Cfa533Rs232Driver
 
         public string GetHardwareFirmwareVersion()
         {
-            throw new NotImplementedException();
+            if (!Connected)
+                throw new DeviceConnectionException("Device not connected");
+            var command = new CommandPacket(CommandType.GetHardwareFirmwareVersion);
+            var response = _deviceConnection?.SendReceive(command);
+            return response?.Data == null ? null : Encoding.ASCII.GetString(response.Data);
         }
 
         public void WriteToUserFlash(byte[] data)
