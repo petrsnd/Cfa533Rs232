@@ -148,52 +148,89 @@ namespace Petrsnd.Cfa533Rs232Driver
             return buffer;
         }
 
-        public void SetScreenLineOneContents(string lineOne)
+        public void SetLcdLineOneContents(string lineOne)
         {
             ThrowIfNotConnected();
             var buffer = GetLineAsBuffer(lineOne);
-            var command = new CommandPacket(CommandType.SetScreenLineOneContents, (byte)buffer.Length, buffer);
+            var command = new CommandPacket(CommandType.SetLcdLineOneContents, (byte)buffer.Length, buffer);
             var response = _deviceConnection?.SendReceive(command);
-            VerifyResponsePacket(response, CommandType.SetScreenLineOneContents);
+            VerifyResponsePacket(response, CommandType.SetLcdLineOneContents);
         }
 
-        public void SetScreenLineTwoContents(string lineTwo)
+        public void SetLcdLineTwoContents(string lineTwo)
         {
             ThrowIfNotConnected();
             var buffer = GetLineAsBuffer(lineTwo);
-            var command = new CommandPacket(CommandType.SetScreenLineTwoContents, (byte)buffer.Length, buffer);
+            var command = new CommandPacket(CommandType.SetLcdLineTwoContents, (byte)buffer.Length, buffer);
             var response = _deviceConnection?.SendReceive(command);
-            VerifyResponsePacket(response, CommandType.SetScreenLineTwoContents);
+            VerifyResponsePacket(response, CommandType.SetLcdLineTwoContents);
         }
 
         public void SetSpecialCharacterData(int index, byte[] data)
         {
-            throw new NotImplementedException();
+            if (index < 0 || index > 7)
+                throw new ArgumentException("Special character index must be 0-7", nameof(index));
+            var buffer = Enumerable.Repeat((byte)0x00, 9).ToArray();
+            buffer[0] = (byte)index;
+            if (data != null)
+                Buffer.BlockCopy(data, 0, buffer, 1, Math.Min(data.Length, 7));
+            var command = new CommandPacket(CommandType.SetSpecialCharacterData, (byte)buffer.Length, buffer);
+            var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.SetSpecialCharacterData);
         }
 
-        public void ReadMemoryForDebug(byte address)
+        public Tuple<byte, byte[]> ReadMemoryForDebug(byte address)
         {
-            throw new NotImplementedException();
+            if (address < 0x40 || address > 0xCF)
+                throw new ArgumentException("Valid addresses are between 0x40 and 0xCF", nameof(address));
+            var command = new CommandPacket(CommandType.ReadMemoryForDebug, 1, new[] {address});
+            var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.ReadMemoryForDebug);
+            if (response?.Data == null || response.Data.Length < 9)
+                throw new DeviceResponseException("Did not receive nine bytes for read memory operation");
+            return new Tuple<byte, byte[]>(response.Data[0], response.Data.Skip(1).Take(8).ToArray());
         }
 
         public void SetCursorPosition(int column, int row)
         {
-            throw new NotImplementedException();
+            if (column < 0 || column > 15)
+                throw new ArgumentException("Column index must be 0-15", nameof(column));
+            if (row < 0 || row > 1)
+                throw new ArgumentException("Row index must be 0-1", nameof(row));
+            var buffer = new[] {(byte)column, (byte)row};
+            var command = new CommandPacket(CommandType.SetCursorPosition, (byte)buffer.Length, buffer);
+            var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.SetCursorPosition);
         }
 
         public void SetCursorStyle(CursorStyle style)
         {
-            throw new NotImplementedException();
+            var buffer = new[] {(byte)style};
+            var command = new CommandPacket(CommandType.SetCursorStyle, (byte)buffer.Length, buffer);
+            var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.SetCursorStyle);
         }
 
         public void SetContrast(int contrast)
         {
-            throw new NotImplementedException();
+            if (contrast < 0 || contrast > 200)
+                throw new ArgumentException("Contrast must be 0-200, only 0-50 are useful", nameof(contrast));
+            var buffer = new[] {(byte)contrast};
+            var command = new CommandPacket(CommandType.SetContrast, (byte)buffer.Length, buffer);
+            var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.SetContrast);
         }
 
         public void SetBacklight(int lcdBrightness, int keypadBrightness)
         {
-            throw new NotImplementedException();
+            if (lcdBrightness < 0 || lcdBrightness > 100)
+                throw new ArgumentException("LCD brightness must be 0-100", nameof(lcdBrightness));
+            if (keypadBrightness < 0 || keypadBrightness > 100)
+                throw new ArgumentException("Keypad brightness must be 0-100", nameof(lcdBrightness));
+            var buffer = new[] {(byte)lcdBrightness, (byte)keypadBrightness};
+            var command = new CommandPacket(CommandType.SetBacklight, (byte)buffer.Length, buffer);
+            var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.SetBacklight);
         }
 
         public byte[] ReadDowDeviceInformation(int deviceIndex)
@@ -247,9 +284,25 @@ namespace Petrsnd.Cfa533Rs232Driver
             throw new NotImplementedException();
         }
 
-        public void SendDataToScreen(int column, int row, string data)
+        public void SendDataToLcd(int column, int row, string data)
         {
-            throw new NotImplementedException();
+            if (column < 0 || column > 15)
+                throw new ArgumentException("Column index must be 0-15", nameof(column));
+            if (row < 0 || row > 1)
+                throw new ArgumentException("Row index must be 0-1", nameof(row));
+            if (string.IsNullOrEmpty(data))
+                throw new ArgumentException("Null or empty string data not allowed");
+            var length = Math.Min(16 - column, data.Length);
+            var buffer = Enumerable.Repeat((byte)0x20, length).ToArray();
+            var command = new CommandPacket(CommandType.SendDataToLcd, (byte)buffer.Length, buffer);
+            var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.SendDataToLcd);
+        }
+
+        public void SetLcdContents(string lineOne, string lineTwo)
+        {
+            SendDataToLcd(0, 0, lineOne);
+            SendDataToLcd(0, 1, lineTwo);
         }
 
         public void SetBaudRate(LcdBaudRate baudRate)

@@ -13,7 +13,7 @@ namespace Cfa533Rs232Tool
     {
         public static int Execute(LcdDevice device, SetLineTwoOptions opts)
         {
-            device.SetScreenLineTwoContents(opts.Text);
+            device.SetLcdLineTwoContents(opts.Text);
             return 0;
         }
     }
