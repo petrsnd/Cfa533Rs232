@@ -105,17 +105,37 @@ namespace Petrsnd.Cfa533Rs232Driver
 
         public void StoreCurrentStateAsBootState()
         {
-            throw new NotImplementedException();
+            ThrowIfNotConnected();
+            var command = new CommandPacket(CommandType.StoreCurrentStateAsBootState);
+            var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.StoreCurrentStateAsBootState);
         }
 
         public void SendPowerOperation(PowerOperation op)
         {
-            throw new NotImplementedException();
+            switch (op)
+            {
+                case PowerOperation.RebootLcd:
+                    var data = new byte[] { 0x08, 0x12, 0x63 };
+                    var command = new CommandPacket(CommandType.SendPowerOperation, (byte)data.Length, data);
+                    var response = _deviceConnection?.SendReceive(command);
+                    VerifyResponsePacket(response, CommandType.SendPowerOperation);
+                    break;
+                case PowerOperation.ResetHost:
+                    throw new NotImplementedException();
+                case PowerOperation.PowerOffHost:
+                    throw new NotImplementedException();
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         public void ClearScreen()
         {
-            throw new NotImplementedException();
+            ThrowIfNotConnected();
+            var command = new CommandPacket(CommandType.ClearScreen);
+            var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.ClearScreen);
         }
 
         public void SetScreenLineOneContents(string lineOne)

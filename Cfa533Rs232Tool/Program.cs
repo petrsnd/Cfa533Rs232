@@ -16,14 +16,18 @@ namespace Cfa533Rs232Tool
                 device.Connect();
                 return Parser.Default
                     .ParseArguments
-                    <PingOptions, ListenOptions, FirmwareOptions, ReadUserFlashOptions, WriteUserFlashOptions>(
-                        args).MapResult(
-                            (PingOptions opts) => PingOp.Execute(device, opts),
-                            (ListenOptions opts) => ListenOp.Execute(device, opts),
-                            (FirmwareOptions opts) => FirmwareOp.Execute(device, opts),
-                            (ReadUserFlashOptions opts) => ReadUserFlashOp.Execute(device, opts),
-                            (WriteUserFlashOptions opts) => WriteUserFlashOp.Execute(device, opts),
-                            errs => 1);
+                    <PingOptions, ListenOptions, FirmwareOptions, ReadUserFlashOptions, WriteUserFlashOptions,
+                        SetBootStateOptions, RebootOptions, ClearOptions>(
+                            args).MapResult(
+                                (PingOptions opts) => PingOp.Execute(device, opts),
+                                (ListenOptions opts) => ListenOp.Execute(device, opts),
+                                (FirmwareOptions opts) => FirmwareOp.Execute(device, opts),
+                                (ReadUserFlashOptions opts) => ReadUserFlashOp.Execute(device, opts),
+                                (WriteUserFlashOptions opts) => WriteUserFlashOp.Execute(device, opts),
+                                (SetBootStateOptions opts) => SetBootStateOp.Execute(device, opts),
+                                (RebootOptions opts) => RebootOp.Execute(device, opts),
+                                (ClearOptions opts) => ClearOp.Execute(device, opts),
+                                errs => 1);
             }
         }
     }
