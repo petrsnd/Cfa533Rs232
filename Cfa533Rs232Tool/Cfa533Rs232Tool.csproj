@@ -47,8 +47,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FirmwareOp.cs" />
+    <Compile Include="ListenOp.cs" />
+    <Compile Include="PingOp.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ReadUserFlashOp.cs" />
+    <Compile Include="WriteUserFlashOp.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />

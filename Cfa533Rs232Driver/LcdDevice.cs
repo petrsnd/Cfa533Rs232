@@ -50,35 +50,57 @@ namespace Petrsnd.Cfa533Rs232Driver
             KeypadActivity?.Invoke(sender, args);
         }
 
-        public bool Ping(string data)
+        private void ThrowIfNotConnected()
         {
             if (!Connected)
-                return false;
+                throw new DeviceConnectionException("Device not connected");
+        }
+
+        private static void VerifyResponsePacket(CommandPacket response, CommandType expected)
+        {
+            if (response == null || response.PacketType != PacketType.NormalResponse || response.CommandType != expected)
+                throw new DeviceCommandException(
+                    $"Invalid response '{response?.Type:X2}' from command '{expected:X2}'");
+        }
+
+        public bool Ping(string data)
+        {
+            ThrowIfNotConnected();
             if (data == null)
                 data = "";
-            var command = new CommandPacket(CommandType.Ping, (byte) data.Length, Encoding.ASCII.GetBytes(data));
+            var command = new CommandPacket(CommandType.Ping, (byte)data.Length, Encoding.ASCII.GetBytes(data));
             var response = _deviceConnection?.SendReceive(command);
-            return response?.PacketType == PacketType.NormalResponse && response.CommandType == CommandType.Ping &&
-                   response.Data.SequenceEqual(command.Data);
+            VerifyResponsePacket(response, CommandType.Ping);
+            return response != null && response.Data.SequenceEqual(command.Data);
         }
 
         public string GetHardwareFirmwareVersion()
         {
-            if (!Connected)
-                throw new DeviceConnectionException("Device not connected");
+            ThrowIfNotConnected();
             var command = new CommandPacket(CommandType.GetHardwareFirmwareVersion);
             var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.GetHardwareFirmwareVersion);
             return response?.Data == null ? null : Encoding.ASCII.GetString(response.Data);
         }
 
         public void WriteToUserFlash(byte[] data)
         {
-            throw new NotImplementedException();
+            ThrowIfNotConnected();
+            var buffer = Enumerable.Repeat((byte)0x00, 16).ToArray();
+            if (data != null)
+                Buffer.BlockCopy(data, 0, buffer, 0, Math.Min(data.Length, buffer.Length));
+            var command = new CommandPacket(CommandType.WriteToUserFlash, (byte)buffer.Length, buffer);
+            var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.WriteToUserFlash);
         }
 
         public byte[] ReadFromUserFlash()
         {
-            throw new NotImplementedException();
+            ThrowIfNotConnected();
+            var command = new CommandPacket(CommandType.ReadFromUserFlash);
+            var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.ReadFromUserFlash);
+            return response?.Data;
         }
 
         public void StoreCurrentStateAsBootState()

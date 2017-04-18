@@ -11,7 +11,7 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
         private readonly string _serialPortName;
         private int _baudRate;
         private SerialPort _serialPort;
-        private Queue<byte> _readBuffer = new Queue<byte>(20);
+        private readonly Queue<byte> _readBuffer = new Queue<byte>(20);
         private readonly object _locker = new object();
 
         public Cfa533Rs232Connection(string serialPortName, int baudRate)
