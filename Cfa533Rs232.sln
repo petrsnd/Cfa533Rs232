@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cfa533Rs232DriverTest", "Cf
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cfa533Rs232Tool", "Cfa533Rs232Tool\Cfa533Rs232Tool.csproj", "{655A95BC-E1BD-46B0-AE02-79518F2DEDC2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cfa533Rs232Demo", "Cfa533Rs232Demo\Cfa533Rs232Demo.csproj", "{144CED77-D7C7-4884-BF73-6FE93AE83C2F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{655A95BC-E1BD-46B0-AE02-79518F2DEDC2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{655A95BC-E1BD-46B0-AE02-79518F2DEDC2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{655A95BC-E1BD-46B0-AE02-79518F2DEDC2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{144CED77-D7C7-4884-BF73-6FE93AE83C2F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{144CED77-D7C7-4884-BF73-6FE93AE83C2F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{144CED77-D7C7-4884-BF73-6FE93AE83C2F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{144CED77-D7C7-4884-BF73-6FE93AE83C2F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
