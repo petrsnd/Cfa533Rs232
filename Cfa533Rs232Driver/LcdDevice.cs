@@ -171,7 +171,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         public void SetSpecialCharacterData(int index, byte[] data)
         {
             if (index < 0 || index > 7)
-                throw new ArgumentException("Special character index must be 0-7", nameof(index));
+                throw new ArgumentException("Special character index must be 0 - 7", nameof(index));
             var buffer = Enumerable.Repeat((byte)0x00, 9).ToArray();
             buffer[0] = (byte)index;
             if (data != null)
@@ -196,9 +196,9 @@ namespace Petrsnd.Cfa533Rs232Driver
         public void SetCursorPosition(int column, int row)
         {
             if (column < 0 || column > 15)
-                throw new ArgumentException("Column index must be 0-15", nameof(column));
+                throw new ArgumentException("Column index must be 0 - 15", nameof(column));
             if (row < 0 || row > 1)
-                throw new ArgumentException("Row index must be 0-1", nameof(row));
+                throw new ArgumentException("Row index must be 0 - 1", nameof(row));
             var buffer = new[] {(byte)column, (byte)row};
             var command = new CommandPacket(CommandType.SetCursorPosition, (byte)buffer.Length, buffer);
             var response = _deviceConnection?.SendReceive(command);
@@ -218,7 +218,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         public void SetContrast(int contrast)
         {
             if (contrast < 0 || contrast > 200)
-                throw new ArgumentException("Contrast must be 0-200, only 0-50 are useful", nameof(contrast));
+                throw new ArgumentException("Contrast must be 0 - 200, only 0 - 50 are useful", nameof(contrast));
             var buffer = new[] {(byte)contrast};
             var command = new CommandPacket(CommandType.SetContrast, (byte)buffer.Length, buffer);
             var response = _deviceConnection?.SendReceive(command);
@@ -228,9 +228,9 @@ namespace Petrsnd.Cfa533Rs232Driver
         public void SetBacklight(int lcdBrightness, int keypadBrightness)
         {
             if (lcdBrightness < 0 || lcdBrightness > 100)
-                throw new ArgumentException("LCD brightness must be 0-100", nameof(lcdBrightness));
+                throw new ArgumentException("LCD brightness must be 0 - 100", nameof(lcdBrightness));
             if (keypadBrightness < 0 || keypadBrightness > 100)
-                throw new ArgumentException("Keypad brightness must be 0-100", nameof(lcdBrightness));
+                throw new ArgumentException("Keypad brightness must be 0 - 100", nameof(lcdBrightness));
             var buffer = new[] {(byte)lcdBrightness, (byte)keypadBrightness};
             var command = new CommandPacket(CommandType.SetBacklight, (byte)buffer.Length, buffer);
             var response = _deviceConnection?.SendReceive(command);
@@ -291,13 +291,17 @@ namespace Petrsnd.Cfa533Rs232Driver
         public void SendDataToLcd(int column, int row, string data)
         {
             if (column < 0 || column > 15)
-                throw new ArgumentException("Column index must be 0-15", nameof(column));
+                throw new ArgumentException("Column index must be 0 - 15", nameof(column));
             if (row < 0 || row > 1)
-                throw new ArgumentException("Row index must be 0-1", nameof(row));
+                throw new ArgumentException("Row index must be 0 - 1", nameof(row));
             if (string.IsNullOrEmpty(data))
                 throw new ArgumentException("Null or empty string data not allowed");
-            var length = Math.Min(16 - column, data.Length);
+            var length = Math.Min(16 - column, data.Length) + 2;
             var buffer = Enumerable.Repeat((byte)0x20, length).ToArray();
+            buffer[0] = (byte)column;
+            buffer[1] = (byte)row;
+            var dataBuffer = Encoding.ASCII.GetBytes(data);
+            Buffer.BlockCopy(dataBuffer, 0, buffer, 2, length - 2);
             var command = new CommandPacket(CommandType.SendDataToLcd, (byte)buffer.Length, buffer);
             var response = _deviceConnection?.SendReceive(command);
             VerifyResponsePacket(response, CommandType.SendDataToLcd);
@@ -305,8 +309,8 @@ namespace Petrsnd.Cfa533Rs232Driver
 
         public void SetLcdContents(string lineOne, string lineTwo)
         {
-            SendDataToLcd(0, 0, lineOne);
-            SendDataToLcd(0, 1, lineTwo);
+            SendDataToLcd(0, 0, lineOne.PadRight(16, ' '));
+            SendDataToLcd(0, 1, lineTwo.PadRight(16, ' '));
         }
 
         public void SetBaudRate(LcdBaudRate baudRate)
