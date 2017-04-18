@@ -1,7 +1,7 @@
 ﻿using CommandLine;
 using Petrsnd.Cfa533Rs232Driver;
 
-namespace Cfa533Rs232Tool
+namespace Petrsnd.Cfa533Rs232Tool.Operations
 {
     [Verb("setlineone", HelpText = "Set line one contents (deprecated).")]
     internal class SetLineOneOptions

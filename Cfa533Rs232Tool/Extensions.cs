@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Text;
 
-namespace Cfa533Rs232Tool
+namespace Petrsnd.Cfa533Rs232Tool
 {
     internal static class Extensions
     {

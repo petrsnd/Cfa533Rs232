@@ -1,7 +1,8 @@
 ﻿using CommandLine;
 using Petrsnd.Cfa533Rs232Driver;
+using Petrsnd.Cfa533Rs232Tool.Operations;
 
-namespace Cfa533Rs232Tool
+namespace Petrsnd.Cfa533Rs232Tool
 {
     [Verb("firmware", HelpText = "Print hardware and firmware version information.")]
     internal class FirmwareOptions

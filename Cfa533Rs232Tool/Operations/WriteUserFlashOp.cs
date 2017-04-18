@@ -1,7 +1,7 @@
 ﻿using CommandLine;
 using Petrsnd.Cfa533Rs232Driver;
 
-namespace Cfa533Rs232Tool
+namespace Petrsnd.Cfa533Rs232Tool.Operations
 {
     [Verb("writeuserflash", HelpText = "Write binary data to user flash.")]
     internal class WriteUserFlashOptions
