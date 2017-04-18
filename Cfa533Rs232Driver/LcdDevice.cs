@@ -138,14 +138,32 @@ namespace Petrsnd.Cfa533Rs232Driver
             VerifyResponsePacket(response, CommandType.ClearScreen);
         }
 
+        private static byte[] GetLineAsBuffer(string line)
+        {
+            var buffer = Enumerable.Repeat((byte)0x20, 16).ToArray();
+            if (line == null)
+                return buffer;
+            var lineBuf = Encoding.ASCII.GetBytes(line);
+            Buffer.BlockCopy(lineBuf, 0, buffer, 0, Math.Min(lineBuf.Length, buffer.Length));
+            return buffer;
+        }
+
         public void SetScreenLineOneContents(string lineOne)
         {
-            throw new NotImplementedException();
+            ThrowIfNotConnected();
+            var buffer = GetLineAsBuffer(lineOne);
+            var command = new CommandPacket(CommandType.SetScreenLineOneContents, (byte)buffer.Length, buffer);
+            var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.SetScreenLineOneContents);
         }
 
         public void SetScreenLineTwoContents(string lineTwo)
         {
-            throw new NotImplementedException();
+            ThrowIfNotConnected();
+            var buffer = GetLineAsBuffer(lineTwo);
+            var command = new CommandPacket(CommandType.SetScreenLineTwoContents, (byte)buffer.Length, buffer);
+            var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.SetScreenLineTwoContents);
         }
 
         public void SetSpecialCharacterData(int index, byte[] data)

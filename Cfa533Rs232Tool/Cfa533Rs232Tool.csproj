@@ -57,6 +57,8 @@
     <Compile Include="ReadUserFlashOp.cs" />
     <Compile Include="RebootOp.cs" />
     <Compile Include="SetBootStateOp.cs" />
+    <Compile Include="SetLineOneOp.cs" />
+    <Compile Include="SetLineTwoOp.cs" />
     <Compile Include="WriteUserFlashOp.cs" />
   </ItemGroup>
   <ItemGroup>
