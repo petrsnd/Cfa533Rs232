@@ -49,6 +49,8 @@
   <ItemGroup>
     <Compile Include="Operations\ClearOp.cs" />
     <Compile Include="Extensions.cs" />
+    <Compile Include="Operations\CursorPositionOp.cs" />
+    <Compile Include="Operations\CursorStyleOp.cs" />
     <Compile Include="Operations\FirmwareOp.cs" />
     <Compile Include="Operations\ListenOp.cs" />
     <Compile Include="Operations\PingOp.cs" />

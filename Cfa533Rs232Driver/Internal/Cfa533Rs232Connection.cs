@@ -81,12 +81,21 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
                 {
                     var commandBuffer = command.ConvertToBuffer();
                     _serialPort.Write(commandBuffer, 0, commandBuffer.Length);
-                    using (var t = WaitForResponseWithTimeout(command.CommandType, TimeSpan.FromSeconds(2)))
+                    try
                     {
-                        t.Wait();
-                        if (t.Result == null)
-                            throw new DeviceTimeoutException("Timeout while waiting for LCD device response");
-                        return t.Result;
+                        using (var t = WaitForResponseWithTimeout(command.CommandType, TimeSpan.FromSeconds(2)))
+                        {
+                            t.Wait();
+                            if (t.Result == null)
+                                throw new DeviceTimeoutException("Timeout while waiting for LCD device response");
+                            return t.Result;
+                        }
+                    }
+                    catch (AggregateException ex)
+                    {
+                        if (ex.InnerException != null)
+                            throw ex.InnerException;
+                        throw ex.Flatten();
                     }
                 }
                 
@@ -161,7 +170,10 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
                 switch (packet.PacketType)
                 {
                     case PacketType.NormalCommand:
-                        throw new DeviceResponseException("Invalid response from LCD device -- normal bits set");
+                        ResponseReceived?.Invoke(this,
+                            new CommandPacketResponseReceivedEventArgs(
+                                new DeviceResponseException("Invalid response from LCD device -- normal bits set")));
+                        break;
                     case PacketType.NormalResponse:
                         ResponseReceived?.Invoke(this, new CommandPacketResponseReceivedEventArgs(packet));
                         break;
@@ -174,9 +186,15 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
                         // TODO: handle temperature report with event
                         break;
                     case PacketType.ErrorResponse:
-                        throw new DeviceResponseException($"Error returned from LCD device '{packet.CommandType}'");
+                        ResponseReceived?.Invoke(this,
+                            new CommandPacketResponseReceivedEventArgs(
+                                new DeviceResponseException($"Error returned from LCD device for command '{packet.CommandType}'")));
+                        break;
                     default:
-                        throw new DeviceResponseException("Unknown response packet type from LCD device");
+                        ResponseReceived?.Invoke(this,
+                            new CommandPacketResponseReceivedEventArgs(
+                                new DeviceResponseException("Unknown response packet type from LCD device")));
+                        break;
                 }
             }
         }
@@ -189,18 +207,29 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
         private async Task<CommandPacket> WaitForResponseWithTimeout(CommandType commandType, TimeSpan timeout)
         {
             CommandPacket response = null;
+            Exception ex = null;
             var eventWaiter = new TaskCompletionSource<bool>();
             EventHandler<CommandPacketResponseReceivedEventArgs> eventHandler =
                 delegate (object sender, CommandPacketResponseReceivedEventArgs args)
                 {
-                    if (args.Response == null || args.Response.CommandType != commandType)
-                        return;
-                    response = args.Response;
-                    eventWaiter.SetResult(true);
+                    if (args.Success)
+                    {
+                        if (args.Response.CommandType != commandType)
+                            return;
+                        response = args.Response;
+                        eventWaiter.SetResult(true);
+                    }
+                    else
+                    {
+                        ex = args.DataReceivedException;
+                        eventWaiter.SetResult(false);
+                    }
                 };
             ResponseReceived += eventHandler;
             var completedTask = await Task.WhenAny(eventWaiter.Task, Task.Delay(timeout));
             ResponseReceived -= eventHandler;
+            if (ex != null)
+                throw ex;
             if (completedTask != eventWaiter.Task)
                 throw new DeviceTimeoutException($"A timeout occurred before '{commandType}' command completed");
             return response;

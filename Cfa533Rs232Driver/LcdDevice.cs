@@ -19,6 +19,8 @@ namespace Petrsnd.Cfa533Rs232Driver
 
         private static int ConvertLcdBaudRateToInt(LcdBaudRate baudRate)
         {
+            if (!Enum.IsDefined(typeof(LcdBaudRate), baudRate))
+                throw new ArgumentException($"Invalid baud rate specified, {(int)baudRate}", nameof(baudRate));
             return (int)baudRate;
         }
 
@@ -205,6 +207,8 @@ namespace Petrsnd.Cfa533Rs232Driver
 
         public void SetCursorStyle(CursorStyle style)
         {
+            if (!Enum.IsDefined(typeof(CursorStyle), style))
+                throw new ArgumentException("Must specify a valid cursor style", nameof(style));
             var buffer = new[] {(byte)style};
             var command = new CommandPacket(CommandType.SetCursorStyle, (byte)buffer.Length, buffer);
             var response = _deviceConnection?.SendReceive(command);
