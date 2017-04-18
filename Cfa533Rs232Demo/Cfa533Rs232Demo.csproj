@@ -7,7 +7,7 @@
     <ProjectGuid>{144CED77-D7C7-4884-BF73-6FE93AE83C2F}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cfa533Rs232Demo</RootNamespace>
+    <RootNamespace>Petrsnd.Cfa533Rs232Demo</RootNamespace>
     <AssemblyName>Cfa533Rs232Demo</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
@@ -55,13 +55,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <WCFMetadata Include="Service References\" />
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="..\Cfa533Rs232Driver\Cfa533Rs232Driver.csproj">
       <Project>{d4265574-93af-4c7a-b6c9-83c1a6b3c245}</Project>
       <Name>Cfa533Rs232Driver</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Operations\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
