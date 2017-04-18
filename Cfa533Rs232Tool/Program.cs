@@ -18,7 +18,7 @@ namespace Petrsnd.Cfa533Rs232Tool
                         .ParseArguments
                         <PingOptions, ListenOptions, FirmwareOptions, ReadUserFlashOptions, WriteUserFlashOptions,
                             SetBootStateOptions, RebootOptions, ClearOptions, SetLineOneOptions, SetLineTwoOptions,
-                            CursorPositionOptions, CursorStyleOptions>(
+                            CursorPositionOptions, CursorStyleOptions, ContrastOptions, BacklightOptions>(
                                 args).MapResult(
                                     (PingOptions opts) => PingOp.Execute(device, opts),
                                     (ListenOptions opts) => ListenOp.Execute(device, opts),
@@ -32,6 +32,8 @@ namespace Petrsnd.Cfa533Rs232Tool
                                     (SetLineTwoOptions opts) => SetLineTwoOp.Execute(device, opts),
                                     (CursorPositionOptions opts) => CursorPositionOp.Execute(device, opts),
                                     (CursorStyleOptions opts) => CursorStyleOp.Execute(device, opts),
+                                    (ContrastOptions opts) => ContrastOp.Execute(device, opts),
+                                    (BacklightOptions opts) => BacklightOp.Execute(device, opts),
                                     errs => 1);
                 }
             }
