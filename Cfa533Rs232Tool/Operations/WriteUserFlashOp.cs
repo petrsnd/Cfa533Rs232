@@ -21,7 +21,7 @@ namespace Petrsnd.Cfa533Rs232Tool.Operations
             if (opts.String != null)
                 data = opts.String.ConvertToBytesAsAscii();
             if (opts.HexString != null)
-                data = opts.String.ConvertToBytesAsHexString();
+                data = opts.HexString.ConvertToBytesAsHexString();
             device.WriteToUserFlash(data);
             return 0;
         }
