@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Text;
 using Petrsnd.Cfa533Rs232Driver.Internal;
+using Serilog;
 
 namespace Petrsnd.Cfa533Rs232Driver
 {
@@ -60,9 +61,13 @@ namespace Petrsnd.Cfa533Rs232Driver
 
         private static void VerifyResponsePacket(CommandPacket response, CommandType expected)
         {
-            if (response == null || response.PacketType != PacketType.NormalResponse || response.CommandType != expected)
-                throw new DeviceCommandException(
-                    $"Invalid response '{response?.Type:X2}' from command '{expected:X2}'");
+            if (response != null && response.PacketType == PacketType.NormalResponse && response.CommandType == expected)
+                return;
+            Log.Debug(
+                "Response verification failed, {PacketType}, Expected: {ExpectedCommand}, Received: {ReceivedCommand}",
+                response?.PacketType, expected, response?.CommandType);
+            throw new DeviceCommandException(
+                $"Invalid response '{response?.Type:X2}' from command '{expected:X2}'");
         }
 
         public bool Ping(string data)

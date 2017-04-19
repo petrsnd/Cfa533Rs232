@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO.Ports;
 using System.Text;
 using System.Threading.Tasks;
+using Serilog;
 
 namespace Petrsnd.Cfa533Rs232Driver.Internal
 {
@@ -38,7 +39,7 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
                 };
                 ConnectHandlers();
                 _serialPort.Open();
-
+                Log.Debug("Serial port connected");
             }
             catch (Exception ex)
             {
@@ -61,6 +62,7 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
             DisconnectHandlers();
             _serialPort.Dispose();
             _serialPort = null;
+            Log.Debug("Serial port disconnected");
         }
 
         public bool Connected => _serialPort != null && _serialPort.IsOpen;
@@ -77,9 +79,12 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
                 // This is a limited device that cannot necessarily handle an
                 // arbitrary number of packets without overflow. It is better to
                 // acknowledge each response before continuing.
+                Log.Debug("SEND: Waiting for lock");
                 lock (_locker)
                 {
                     var commandBuffer = command.ConvertToBuffer();
+                    Log.Debug("SEND: {PacketType}:{CommandType} -- {ResponsePacketData}", command.PacketType,
+                        command.CommandType, BitConverter.ToString(commandBuffer));
                     _serialPort.Write(commandBuffer, 0, commandBuffer.Length);
                     try
                     {
@@ -132,7 +137,7 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
 
         private static void PinChangeHandler(object sender, SerialPinChangedEventArgs e)
         {
-            // TODO: log this stuff I guess...
+            Log.Debug("Serial port pin change: {PinEvent}", e.EventType);
         }
 
         private event EventHandler<CommandPacketResponseReceivedEventArgs> ResponseReceived;
@@ -143,54 +148,66 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
             {
                 var packet = CommandPacketParser.Parse(_readBuffer.ToArray());
                 if (packet == null)
+                {
+                    Log.Debug("Null packet without error");
                     return null;
+                }
                 for (var i = 0; i < packet.PacketSizeWithCrc; i++)
                     _readBuffer.Dequeue();
                 return packet;
             }
             catch (Exception ex)
             {
-                // TODO: log
+                Log.Debug("Parse response packet exception: {ParseError}", ex.Message);
                 return null;
             }
         }
 
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
+            Log.Debug("RECV: Data received");
             while (_serialPort.BytesToRead > 0)
             {
                 var b = (byte) _serialPort.ReadByte();
                 _readBuffer.Enqueue(b);
             }
+            Log.Debug("RECV: Current read buffer: {ReadBuffer}", BitConverter.ToString(_readBuffer.ToArray()));
             while (true)
             {
                 var packet = TryParsePacket();
                 if (packet == null)
                     break;
+                Log.Debug("RECV: {PacketType}:{CommandType} -- {ResponsePacketData}", packet.PacketType,
+                    packet.CommandType, BitConverter.ToString(packet.ConvertToBuffer()));
                 switch (packet.PacketType)
                 {
                     case PacketType.NormalCommand:
+                        Log.Debug("RESP: Command in place of response");
                         ResponseReceived?.Invoke(this,
                             new CommandPacketResponseReceivedEventArgs(
                                 new DeviceResponseException("Invalid response from LCD device -- normal bits set")));
                         break;
                     case PacketType.NormalResponse:
+                        Log.Debug("RESP: Recognized command response");
                         ResponseReceived?.Invoke(this, new CommandPacketResponseReceivedEventArgs(packet));
                         break;
                     case PacketType.NormalReport:
                         if (packet.CommandType == CommandType.KeyActivity)
                         {
-                            var action = (KeypadAction) packet.Data[0];
+                            var action = (KeypadAction)packet.Data[0];
+                            Log.Debug("RESP: Keypad event: {KeypadEvent}", action);
                             KeypadActivity?.Invoke(this, new KeypadActivityEventArgs(action.ConvertToKeyFlags(), action));
                         }
                         // TODO: handle temperature report with event
                         break;
                     case PacketType.ErrorResponse:
+                        Log.Debug("RESP: Error for {ErrorCommandType}", packet.CommandType);
                         ResponseReceived?.Invoke(this,
                             new CommandPacketResponseReceivedEventArgs(
                                 new DeviceResponseException($"Error returned from LCD device for command '{packet.CommandType}'")));
                         break;
                     default:
+                        Log.Debug("RESP: Unknown response");
                         ResponseReceived?.Invoke(this,
                             new CommandPacketResponseReceivedEventArgs(
                                 new DeviceResponseException("Unknown response packet type from LCD device")));
@@ -201,7 +218,7 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
 
         private static void ErrorReceivedHandler(object sender, SerialErrorReceivedEventArgs e)
         {
-            // TODO: log this stuff I guess...
+            Log.Error("Received serial port error: {PortError}", e.EventType);
         }
 
         private async Task<CommandPacket> WaitForResponseWithTimeout(CommandType commandType, TimeSpan timeout)
