@@ -163,57 +163,72 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
             }
         }
 
-        private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
+        private void ReadAllAvailableBytes()
         {
-            Log.Debug("RECV: Data received");
+            Log.Debug("RECV: Reading available bytes");
             while (_serialPort.BytesToRead > 0)
             {
-                var b = (byte) _serialPort.ReadByte();
+                var b = (byte)_serialPort.ReadByte();
                 _readBuffer.Enqueue(b);
             }
             Log.Debug("RECV: Current read buffer: {ReadBuffer}", BitConverter.ToString(_readBuffer.ToArray()));
+        }
+
+        private void HandleResponsePacket(CommandPacket packet)
+        {
+            Log.Debug("RECV: {PacketType}:{CommandType} -- {ResponsePacketData}", packet.PacketType,
+                    packet.CommandType, BitConverter.ToString(packet.ConvertToBuffer()));
+            switch (packet.PacketType)
+            {
+                case PacketType.NormalCommand:
+                    Log.Debug("RESP: Command in place of response");
+                    ResponseReceived?.Invoke(this,
+                        new CommandPacketResponseReceivedEventArgs(
+                            new DeviceResponseException("Invalid response from LCD device -- normal bits set")));
+                    break;
+                case PacketType.NormalResponse:
+                    Log.Debug("RESP: Recognized command response");
+                    ResponseReceived?.Invoke(this, new CommandPacketResponseReceivedEventArgs(packet));
+                    break;
+                case PacketType.NormalReport:
+                    if (packet.CommandType == CommandType.KeyActivity)
+                    {
+                        var action = (KeypadAction)packet.Data[0];
+                        Log.Debug("RESP: Keypad event: {KeypadEvent}", action);
+                        KeypadActivity?.BeginInvoke(this,
+                            new KeypadActivityEventArgs(action.ConvertToKeyFlags(), action), null, null);
+                    }
+                    // TODO: handle temperature report with event
+                    break;
+                case PacketType.ErrorResponse:
+                    Log.Debug("RESP: Error for {ErrorCommandType}", packet.CommandType);
+                    ResponseReceived?.Invoke(this,
+                        new CommandPacketResponseReceivedEventArgs(
+                            new DeviceResponseException($"Error returned from LCD device for command '{packet.CommandType}'")));
+                    break;
+                default:
+                    Log.Debug("RESP: Unknown response");
+                    ResponseReceived?.Invoke(this,
+                        new CommandPacketResponseReceivedEventArgs(
+                            new DeviceResponseException("Unknown response packet type from LCD device")));
+                    break;
+            }
+        }
+
+        private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
+        {
+            Log.Debug("RECV: Data received begin");
             while (true)
             {
+                ReadAllAvailableBytes();
+                if (_readBuffer.Count == 0)
+                    break;
                 var packet = TryParsePacket();
                 if (packet == null)
                     break;
-                Log.Debug("RECV: {PacketType}:{CommandType} -- {ResponsePacketData}", packet.PacketType,
-                    packet.CommandType, BitConverter.ToString(packet.ConvertToBuffer()));
-                switch (packet.PacketType)
-                {
-                    case PacketType.NormalCommand:
-                        Log.Debug("RESP: Command in place of response");
-                        ResponseReceived?.Invoke(this,
-                            new CommandPacketResponseReceivedEventArgs(
-                                new DeviceResponseException("Invalid response from LCD device -- normal bits set")));
-                        break;
-                    case PacketType.NormalResponse:
-                        Log.Debug("RESP: Recognized command response");
-                        ResponseReceived?.Invoke(this, new CommandPacketResponseReceivedEventArgs(packet));
-                        break;
-                    case PacketType.NormalReport:
-                        if (packet.CommandType == CommandType.KeyActivity)
-                        {
-                            var action = (KeypadAction)packet.Data[0];
-                            Log.Debug("RESP: Keypad event: {KeypadEvent}", action);
-                            KeypadActivity?.Invoke(this, new KeypadActivityEventArgs(action.ConvertToKeyFlags(), action));
-                        }
-                        // TODO: handle temperature report with event
-                        break;
-                    case PacketType.ErrorResponse:
-                        Log.Debug("RESP: Error for {ErrorCommandType}", packet.CommandType);
-                        ResponseReceived?.Invoke(this,
-                            new CommandPacketResponseReceivedEventArgs(
-                                new DeviceResponseException($"Error returned from LCD device for command '{packet.CommandType}'")));
-                        break;
-                    default:
-                        Log.Debug("RESP: Unknown response");
-                        ResponseReceived?.Invoke(this,
-                            new CommandPacketResponseReceivedEventArgs(
-                                new DeviceResponseException("Unknown response packet type from LCD device")));
-                        break;
-                }
+                HandleResponsePacket(packet);
             }
+            Log.Debug("RECV: Data received complete");
         }
 
         private static void ErrorReceivedHandler(object sender, SerialErrorReceivedEventArgs e)
