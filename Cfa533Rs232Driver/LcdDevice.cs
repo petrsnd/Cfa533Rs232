@@ -61,7 +61,13 @@ namespace Petrsnd.Cfa533Rs232Driver
 
         private static void VerifyResponsePacket(CommandPacket response, CommandType expected)
         {
-            if (response != null && response.PacketType == PacketType.NormalResponse && response.CommandType == expected)
+            if (response == null)
+            {
+                Log.Debug(
+                    "Response verification null packet, should only occur when shutting down in mulithreaded appliaction");
+                return;
+            }
+            if (response.PacketType == PacketType.NormalResponse && response.CommandType == expected)
                 return;
             Log.Debug(
                 "Response verification failed, {PacketType}, Expected: {ExpectedCommand}, Received: {ReceivedCommand}",

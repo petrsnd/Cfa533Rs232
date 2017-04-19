@@ -24,9 +24,10 @@ namespace Petrsnd.Cfa533Rs232Demo
                     device.Connect();
                     return Parser.Default
                         .ParseArguments
-                        <MultiFieldOptions>(
+                        <MultiFieldOptions, KnightRiderOptions>(
                                 args).MapResult(
                                     (MultiFieldOptions opts) => MultiFieldDemo.Execute(device, opts),
+                                    (KnightRiderOptions opts) => KnightRiderDemo.Execute(device, opts),
                                     errs => 1);
                 }
             }

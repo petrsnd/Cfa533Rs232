@@ -85,6 +85,8 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
                     var commandBuffer = command.ConvertToBuffer();
                     Log.Debug("SEND: {PacketType}:{CommandType} -- {ResponsePacketData}", command.PacketType,
                         command.CommandType, BitConverter.ToString(commandBuffer));
+                    if (_serialPort == null || !_serialPort.IsOpen)
+                        return null;
                     _serialPort.Write(commandBuffer, 0, commandBuffer.Length);
                     try
                     {
@@ -102,6 +104,8 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
                             throw ex.InnerException;
                         throw ex.Flatten();
                     }
+                    // The serial port was closed before the lock was obtained
+                    return null;
                 }
                 
             }
@@ -166,7 +170,7 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
         private void ReadAllAvailableBytes()
         {
             Log.Debug("RECV: Reading available bytes");
-            while (_serialPort.BytesToRead > 0)
+            while (_serialPort != null && _serialPort.IsOpen && _serialPort.BytesToRead > 0)
             {
                 var b = (byte)_serialPort.ReadByte();
                 _readBuffer.Enqueue(b);
