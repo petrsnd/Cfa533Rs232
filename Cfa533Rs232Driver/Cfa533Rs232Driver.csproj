@@ -45,6 +45,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CursorStyle.cs" />
+    <Compile Include="ILcdDevice.cs" />
     <Compile Include="PacketParseException.cs" />
     <Compile Include="DeviceConnectionException.cs" />
     <Compile Include="DeviceCommandException.cs" />
