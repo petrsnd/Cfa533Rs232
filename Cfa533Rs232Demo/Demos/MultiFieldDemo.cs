@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Threading;
 using CommandLine;
 using Newtonsoft.Json;
 using Petrsnd.Cfa533Rs232Driver;
@@ -30,6 +29,7 @@ namespace Petrsnd.Cfa533Rs232Demo.Demos
             private readonly LcdDevice _device;
             private readonly Field[] _fields;
             private int _index;
+            private int _colIndex;
 
             public FieldDisplayer(LcdDevice device, Field[] fields)
             {
@@ -37,12 +37,31 @@ namespace Petrsnd.Cfa533Rs232Demo.Demos
                 _fields = fields;
             }
 
+            private string GetLineText(string text)
+            {
+                if (text.Length <= 16)
+                    return text;
+                var index = _colIndex;
+                if (text.Length - _colIndex < 16)
+                    index = text.Length - 16;
+                text = text.Substring(index);
+                if (text.Length > 16)
+                    text = text.Substring(0, 15) + (char)0x7e;
+                return text;
+            }
+
             private void DisplayField()
             {
-                Thread.Sleep(250);
+                if (_index >= _fields.Length)
+                    _index = 0;
+                if (_index < 0)
+                    _index = _fields.Length - 1;
+                var stringLength = Math.Max(_fields[_index].Name.Length, _fields[_index].Value.Length);
+                if (_colIndex > (stringLength - 16))
+                    _colIndex = 0;
                 Log.Debug("Writing Index={Index}, Name={Name}, Value={Value}", _index, _fields[_index].Name,
                     _fields[_index].Value);
-                _device.SetLcdContents(_fields[_index].Name, _fields[_index].Value);
+                _device.SetLcdContents(GetLineText(_fields[_index].Name), GetLineText(_fields[_index].Value));
             }
 
             public int Run()
@@ -53,28 +72,26 @@ namespace Petrsnd.Cfa533Rs232Demo.Demos
                     EventHandler<KeypadActivityEventArgs> eventHandler =
                         delegate(object sender, KeypadActivityEventArgs eventArgs)
                         {
-                            var updateDisplay = false;
                             switch (eventArgs.KeypadAction)
                             {
-                                case KeypadAction.DownKeyRelease:
+                                case KeypadAction.DownKeyDown:
                                     _index++;
-                                    Log.Debug("Increment");
-                                    updateDisplay = true;
+                                    _colIndex = 0;
+                                    DisplayField();
                                     break;
-                                case KeypadAction.UpKeyRelease:
+                                case KeypadAction.UpKeyDown:
                                     _index--;
-                                    Log.Debug("Decrement", _index);
-                                    updateDisplay = true;
+                                    _colIndex = 0;
+                                    DisplayField();
                                     break;
-                            }
-                            if (_index >= _fields.Length)
-                                _index = 0;
-                            if (_index < 0)
-                                _index = _fields.Length - 1;
-                            if (updateDisplay)
-                            {
-                                Log.Debug("Index={Index}", _index);
-                                DisplayField();
+                                case KeypadAction.RightKeyDown:
+                                    _colIndex++;
+                                    DisplayField();
+                                    break;
+                                case KeypadAction.LeftKeyDown:
+                                    _colIndex--;
+                                    DisplayField();
+                                    break;
                             }
                         };
                     _device.KeypadActivity += eventHandler;
@@ -113,6 +130,8 @@ namespace Petrsnd.Cfa533Rs232Demo.Demos
                     new Field {Name = "LabelTwo:", Value = "255.255.255.0"},
                     new Field {Name = "Long:", Value = "abcdefghijklmnopqrstuvwxyz"},
                     new Field {Name = "Empty:", Value = ""},
+                    new Field {Name = "ReallyReallyReallyLongLabel:", Value = "abc"},
+                    new Field {Name = "Suuuuuuuperrrrrlong:", Value = "abcdefghijklmnopqrstuvwxyz"},
                 };
             }
             return new FieldDisplayer(device, fields).Run();
