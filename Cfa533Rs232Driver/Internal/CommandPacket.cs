@@ -1,4 +1,7 @@
-﻿namespace Petrsnd.Cfa533Rs232Driver.Internal
+﻿using System;
+using Serilog;
+
+namespace Petrsnd.Cfa533Rs232Driver.Internal
 {
     internal class CommandPacket
     {
@@ -57,7 +60,12 @@
         public bool ValidateCrc()
         {
             var buffer = GetPacketBufferWithoutCrc();
-            return CalculateCrcFromTable(buffer) == Crc;
+            var calculated = CalculateCrcFromTable(buffer);
+            var result = (calculated == Crc);
+            if (!result)
+                Log.Debug("CRC Mismatch: {PacketData}, CrcCalculated: {CalculatedCrc}, CrcField: {FieldCrc}",
+                    BitConverter.ToString(ConvertToBuffer()), calculated, Crc);
+            return result;
         }
 
         public int PacketSize => sizeof(byte) + sizeof(byte) + DataLength;

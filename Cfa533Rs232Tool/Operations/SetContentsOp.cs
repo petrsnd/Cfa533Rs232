@@ -4,7 +4,7 @@ using Petrsnd.Cfa533Rs232Driver;
 namespace Petrsnd.Cfa533Rs232Tool.Operations
 {
     [Verb("setcontents", HelpText = "Set contents of entire LCD.")]
-    internal class SetContentsOptions
+    internal class SetContentsOptions : GlobalOptionsBase
     {
         [Option(HelpText = "Text for line one of LCD")]
         public string One { get; set; }
@@ -13,9 +13,9 @@ namespace Petrsnd.Cfa533Rs232Tool.Operations
         public string Two { get; set; }
     }
 
-    internal static class SetContentsOp
+    internal class SetContentsOp : IOp<SetContentsOptions>
     {
-        public static int Execute(LcdDevice device, SetContentsOptions opts)
+        public int Run(LcdDevice device, SetContentsOptions opts)
         {
             device.SetLcdContents(opts.One, opts.Two);
             return 0;

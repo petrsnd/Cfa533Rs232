@@ -2,10 +2,11 @@
 using System.Linq;
 using System.Text;
 using Petrsnd.Cfa533Rs232Driver.Internal;
+using Serilog;
 
 namespace Petrsnd.Cfa533Rs232Driver
 {
-    public class LcdDevice : IDisposable
+    public class LcdDevice : ILcdDevice
     {
         private readonly string _serialPortName;
         private int _baudRate;
@@ -24,6 +25,9 @@ namespace Petrsnd.Cfa533Rs232Driver
             return (int)baudRate;
         }
 
+        /// <summary>
+        /// Open serial connection to the LCD device as configured when constructed.
+        /// </summary>
         public void Connect()
         {
             if (Connected)
@@ -33,8 +37,14 @@ namespace Petrsnd.Cfa533Rs232Driver
             _deviceConnection.KeypadActivity += KeyboardActivityProxy;
         }
 
+        /// <summary>
+        /// Serial connection status.
+        /// </summary>
         public bool Connected => _deviceConnection != null && _deviceConnection.Connected;
 
+        /// <summary>
+        /// Close serial connection to LCD device.
+        /// </summary>
         public void Disconnect()
         {
             if (_deviceConnection == null)
@@ -45,6 +55,13 @@ namespace Petrsnd.Cfa533Rs232Driver
             _deviceConnection = null;
         }
 
+        /// <summary>
+        /// Event for receiving keypad activty.  These events will always come on a
+        /// separate thread.  Sending commands based on key activity events will have
+        /// to wait for a lock.  Because of the packet-based communication of CFA533,
+        /// only one command is handled at a time in order to allow each command to
+        /// be acknowledged.
+        /// </summary>
         public event EventHandler<KeypadActivityEventArgs> KeypadActivity;
 
         private void KeyboardActivityProxy(object sender, KeypadActivityEventArgs args)
@@ -60,11 +77,26 @@ namespace Petrsnd.Cfa533Rs232Driver
 
         private static void VerifyResponsePacket(CommandPacket response, CommandType expected)
         {
-            if (response == null || response.PacketType != PacketType.NormalResponse || response.CommandType != expected)
-                throw new DeviceCommandException(
-                    $"Invalid response '{response?.Type:X2}' from command '{expected:X2}'");
+            if (response == null)
+            {
+                Log.Debug(
+                    "Response verification null packet, should only occur when shutting down in mulithreaded appliaction");
+                return;
+            }
+            if (response.PacketType == PacketType.NormalResponse && response.CommandType == expected)
+                return;
+            Log.Debug(
+                "Response verification failed, {PacketType}, Expected: {ExpectedCommand}, Received: {ReceivedCommand}",
+                response.PacketType, expected, response.CommandType);
+            throw new DeviceCommandException(
+                $"Invalid response '{response.Type:X2}' from command '{expected:X2}'");
         }
 
+        /// <summary>
+        /// Send a ping to the LCD device to ensure proper packet-based communication.
+        /// </summary>
+        /// <param name="data">String that will be echoed back from LCD device.</param>
+        /// <returns></returns>
         public bool Ping(string data)
         {
             ThrowIfNotConnected();
@@ -76,6 +108,10 @@ namespace Petrsnd.Cfa533Rs232Driver
             return response != null && response.Data.SequenceEqual(command.Data);
         }
 
+        /// <summary>
+        /// Get the hardware and firmware version of the LCD as a single string.
+        /// </summary>
+        /// <returns>Hardware and firmware versions.</returns>
         public string GetHardwareFirmwareVersion()
         {
             ThrowIfNotConnected();
@@ -85,6 +121,11 @@ namespace Petrsnd.Cfa533Rs232Driver
             return response?.Data == null ? null : Encoding.ASCII.GetString(response.Data);
         }
 
+        /// <summary>
+        /// Write 16 bytes of data to the LCD device user storage area.
+        /// </summary>
+        /// <param name="data">If more than 16 bytes are specified, only the first 16 will be stored.
+        /// If less than 16 bytes are specified, the remaining bytes will be set to 0x00.</param>
         public void WriteToUserFlash(byte[] data)
         {
             ThrowIfNotConnected();
@@ -96,6 +137,10 @@ namespace Petrsnd.Cfa533Rs232Driver
             VerifyResponsePacket(response, CommandType.WriteToUserFlash);
         }
 
+        /// <summary>
+        /// Read 16 bytes of data from the LCD device user storage area.
+        /// </summary>
+        /// <returns>Exactly 16 bytes will always be returned.</returns>
         public byte[] ReadFromUserFlash()
         {
             ThrowIfNotConnected();
@@ -105,6 +150,17 @@ namespace Petrsnd.Cfa533Rs232Driver
             return response?.Data;
         }
 
+        /// <summary>
+        /// Store the current state of the LCD device as its boot state.  This is the state of the
+        /// LCD device immediately after power is connected.  Set up desired boot state using other
+        /// methods and call this method to store it.
+        /// </summary>
+        /// <remarks>
+        /// State includes: 1) characters on the LCD, 2) special character definitions, 3) cursor
+        /// position, 4) cursor style, 5) LCD contrast, 6) LCD backlight brightness, 7) keypad
+        /// backlight brightness, 8) settings of any live displays, 9) key press and release masks,
+        /// 10) ATX function enable and pulse settings, 11) baud rate, and 12) GPIO settings.
+        /// </remarks>
         public void StoreCurrentStateAsBootState()
         {
             ThrowIfNotConnected();
@@ -113,6 +169,11 @@ namespace Petrsnd.Cfa533Rs232Driver
             VerifyResponsePacket(response, CommandType.StoreCurrentStateAsBootState);
         }
 
+        /// <summary>
+        /// Send a power operation to the LCD device to affect the device itself or the host if it
+        /// is configured to do so.
+        /// </summary>
+        /// <param name="op">Currently the only supported operation is RebootLcd.</param>
         public void SendPowerOperation(PowerOperation op)
         {
             switch (op)
@@ -132,6 +193,9 @@ namespace Petrsnd.Cfa533Rs232Driver
             }
         }
 
+        /// <summary>
+        /// Clear all characters from the LCD device screen.
+        /// </summary>
         public void ClearScreen()
         {
             ThrowIfNotConnected();
@@ -150,6 +214,11 @@ namespace Petrsnd.Cfa533Rs232Driver
             return buffer;
         }
 
+        /// <summary>
+        /// Set the string contents of first line of the LCD device screen.
+        /// </summary>
+        /// <param name="lineOne">Only the first 16 characters will be displayed.  If a shorter
+        /// string is specified, the remaining columns of the screen will be cleared.</param>
         public void SetLcdLineOneContents(string lineOne)
         {
             ThrowIfNotConnected();
@@ -159,6 +228,11 @@ namespace Petrsnd.Cfa533Rs232Driver
             VerifyResponsePacket(response, CommandType.SetLcdLineOneContents);
         }
 
+        /// <summary>
+        /// Set the string contents of second line of the LCD device screen.
+        /// </summary>
+        /// <param name="lineTwo">Only the first 16 characters will be displayed.  If a shorter
+        /// string is specified, the remaining columns of the screen will be cleared.</param>
         public void SetLcdLineTwoContents(string lineTwo)
         {
             ThrowIfNotConnected();
@@ -168,6 +242,11 @@ namespace Petrsnd.Cfa533Rs232Driver
             VerifyResponsePacket(response, CommandType.SetLcdLineTwoContents);
         }
 
+        /// <summary>
+        /// Set the font definition for one of the special characters (CGRAM).
+        /// </summary>
+        /// <param name="index">Character index, valid indexes are 0 - 7.</param>
+        /// <param name="data">The 8 byte bitmap of the new font for this character.</param>
         public void SetSpecialCharacterData(int index, byte[] data)
         {
             if (index < 0 || index > 7)
@@ -181,6 +260,17 @@ namespace Petrsnd.Cfa533Rs232Driver
             VerifyResponsePacket(response, CommandType.SetSpecialCharacterData);
         }
 
+        /// <summary>
+        /// Read contents of the LCD device's DDRAM or CGRAM.  This command is intended for
+        /// debugging.
+        /// </summary>
+        /// <remarks>
+        /// 0x40 - 0x7F -- CGRAM
+        /// 0x80 - 0x8F -- DDRAM, line 1
+        /// 0xC0 - 0xCF -- DDRAM, line 2
+        /// </remarks>
+        /// <param name="address">Native address code of the desired data.</param>
+        /// <returns>8 bytes of memory from the specified location.</returns>
         public Tuple<byte, byte[]> ReadMemoryForDebug(byte address)
         {
             if (address < 0x40 || address > 0xCF)
@@ -193,6 +283,11 @@ namespace Petrsnd.Cfa533Rs232Driver
             return new Tuple<byte, byte[]>(response.Data[0], response.Data.Skip(1).Take(8).ToArray());
         }
 
+        /// <summary>
+        /// Set the position of the cursor on the LCD device screen.
+        /// </summary>
+        /// <param name="column">Column index, 0 - 15.</param>
+        /// <param name="row">Row index, 0 - 1.</param>
         public void SetCursorPosition(int column, int row)
         {
             if (column < 0 || column > 15)
@@ -205,6 +300,10 @@ namespace Petrsnd.Cfa533Rs232Driver
             VerifyResponsePacket(response, CommandType.SetCursorPosition);
         }
 
+        /// <summary>
+        /// Set the cursor style on the LCD device screen.
+        /// </summary>
+        /// <param name="style">Style to set.</param>
         public void SetCursorStyle(CursorStyle style)
         {
             if (!Enum.IsDefined(typeof(CursorStyle), style))
@@ -215,6 +314,17 @@ namespace Petrsnd.Cfa533Rs232Driver
             VerifyResponsePacket(response, CommandType.SetCursorStyle);
         }
 
+        /// <summary>
+        /// Set the contrast or vertical viewing angle of the display.
+        /// </summary>
+        /// <remarks>
+        /// Values of 0 - 200 are valid but only 0 - 50 are useful:
+        /// 0 is light
+        /// 16 is about right
+        /// 29 is dark
+        /// 30 - 50 are very dark
+        /// </remarks>
+        /// <param name="contrast">Integer value of the contrast, 0 - 50.</param>
         public void SetContrast(int contrast)
         {
             if (contrast < 0 || contrast > 200)
@@ -225,6 +335,15 @@ namespace Petrsnd.Cfa533Rs232Driver
             VerifyResponsePacket(response, CommandType.SetContrast);
         }
 
+        /// <summary>
+        /// Set the brightness of the backlights for the LCD device screen and keypad.
+        /// </summary>
+        /// <remarks>
+        /// The brightness levels affect the lifetime guarantees of the LCD device.
+        /// Setting to 0 is off.
+        /// </remarks>
+        /// <param name="lcdBrightness">The brightness level of the LCD device screen, 0 - 100.</param>
+        /// <param name="keypadBrightness">The brightness level of the LCD device keypad, 0 -100.</param>
         public void SetBacklight(int lcdBrightness, int keypadBrightness)
         {
             if (lcdBrightness < 0 || lcdBrightness > 100)
@@ -237,57 +356,113 @@ namespace Petrsnd.Cfa533Rs232Driver
             VerifyResponsePacket(response, CommandType.SetBacklight);
         }
 
+        /// <summary>
+        /// Not implemented.
+        /// </summary>
+        /// <param name="deviceIndex"></param>
+        /// <returns></returns>
         public byte[] ReadDowDeviceInformation(int deviceIndex)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not implemented.
+        /// </summary>
+        /// <param name="data"></param>
         public void SetUpTemperatureReporting(byte[] data)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not implemented.
+        /// </summary>
+        /// <param name="deviceIndex"></param>
+        /// <param name="data"></param>
         public void ArbitraryDowTransaction(int deviceIndex, byte[] data)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not implemented.
+        /// </summary>
+        /// <param name="displaySlot"></param>
+        /// <param name="type"></param>
+        /// <param name="deviceIndex"></param>
+        /// <param name="numberOfDigits"></param>
+        /// <param name="column"></param>
+        /// <param name="row"></param>
+        /// <param name="units"></param>
         public void SetUpLiveTemperatureDisplay(int displaySlot, TemperatureDisplayItemType type, int deviceIndex,
             int numberOfDigits, int column, int row, TemperatureUnits units)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not implemented.
+        /// </summary>
+        /// <param name="code"></param>
+        /// <param name="data"></param>
         public void SendCommandToController(LocationCode code, byte data)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not implemented.
+        /// </summary>
+        /// <param name="pressMask"></param>
+        /// <param name="upMask"></param>
         public void ConfigureKeyReporting(byte pressMask, byte upMask)
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not implemented.
+        /// </summary>
+        /// <returns></returns>
         public Tuple<byte, byte, byte> ReadKeypadPolled()
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not implemented.
+        /// </summary>
         public void SetAtxSwitchFunctionality()
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not implemented.
+        /// </summary>
         public void HostWatchdogReset()
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not implemented.
+        /// </summary>
+        /// <returns></returns>
         public byte[] ReadReportingAtxWatchdog()
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Send data to the LCD device screen.  Coordinates can be specified to begin
+        /// writing.  Only the specified characters are written.  Any characters that
+        /// would run off the screen are truncated.
+        /// </summary>
+        /// <param name="column">Column index, 0 - 15.</param>
+        /// <param name="row">Row index, 0 - 1.</param>
+        /// <param name="data">String to write at the specified location.</param>
         public void SendDataToLcd(int column, int row, string data)
         {
             if (column < 0 || column > 15)
@@ -307,23 +482,49 @@ namespace Petrsnd.Cfa533Rs232Driver
             VerifyResponsePacket(response, CommandType.SendDataToLcd);
         }
 
+        /// <summary>
+        /// Convenience method to set the entire contents of the LCD device screen in
+        /// one method call.
+        /// </summary>
+        /// <param name="lineOne">Only the first 16 characters will be displayed.  If a shorter
+        /// string is specified, the remaining columns of the screen will be cleared.</param>
+        /// <param name="lineTwo">Only the first 16 characters will be displayed.  If a shorter
+        /// string is specified, the remaining columns of the screen will be cleared.</param>
         public void SetLcdContents(string lineOne, string lineTwo)
         {
+            if (lineOne == null)
+                lineOne = "";
+            if (lineTwo == null)
+                lineTwo = "";
             SendDataToLcd(0, 0, lineOne.PadRight(16, ' '));
             SendDataToLcd(0, 1, lineTwo.PadRight(16, ' '));
         }
 
+        /// <summary>
+        /// Set a new baud rate for communications with the LCD device.
+        /// </summary>
+        /// <remarks>
+        /// Calling this method basically results in a reconnect of the serial port.  The command
+        /// is acknowledged and then the connection is reopened with the new baud rate.
+        /// </remarks>
+        /// <param name="baudRate">Only 9600, 19200, and 115200 are supported</param>
         public void SetBaudRate(LcdBaudRate baudRate)
         {
             _baudRate = ConvertLcdBaudRateToInt(baudRate);
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not implemented.
+        /// </summary>
         public void ConfigureGpio()
         {
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Not implemented.
+        /// </summary>
         public void ReadGpioPinLevelsAndState()
         {
             throw new NotImplementedException();
