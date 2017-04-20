@@ -15,7 +15,7 @@ namespace Petrsnd.Cfa533Rs232Demo.Demos
         {
             device.ClearScreen();
             int x = 0, y = 0;
-            using (var timer = new Timer(state =>
+            using (new Timer(state =>
             {
                 var oldX = x;
                 var oldY = y;

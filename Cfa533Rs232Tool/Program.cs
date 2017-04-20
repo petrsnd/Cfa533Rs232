@@ -1,6 +1,4 @@
-﻿using System;
-using CommandLine;
-using Petrsnd.Cfa533Rs232Driver;
+﻿using CommandLine;
 using Petrsnd.Cfa533Rs232Tool.Operations;
 
 namespace Petrsnd.Cfa533Rs232Tool

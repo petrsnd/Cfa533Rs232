@@ -104,8 +104,6 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
                             throw ex.InnerException;
                         throw ex.Flatten();
                     }
-                    // The serial port was closed before the lock was obtained
-                    return null;
                 }
                 
             }

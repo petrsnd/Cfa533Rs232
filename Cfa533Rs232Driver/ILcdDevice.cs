@@ -89,7 +89,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <summary>
         /// Set the string contents of second line of the LCD device screen.
         /// </summary>
-        /// <param name="lineOne">Only the first 16 characters will be displayed.  If a shorter
+        /// <param name="lineTwo">Only the first 16 characters will be displayed.  If a shorter
         /// string is specified, the remaining columns of the screen will be cleared.</param>
         void SetLcdLineTwoContents(string lineTwo);
 
