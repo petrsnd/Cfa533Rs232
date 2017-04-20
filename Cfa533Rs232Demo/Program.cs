@@ -1,7 +1,5 @@
-﻿using System;
-using CommandLine;
+﻿using CommandLine;
 using Petrsnd.Cfa533Rs232Demo.Demos;
-using Petrsnd.Cfa533Rs232Driver;
 using Serilog;
 
 namespace Petrsnd.Cfa533Rs232Demo
@@ -17,25 +15,14 @@ namespace Petrsnd.Cfa533Rs232Demo
                 .MinimumLevel.Debug()
                 .CreateLogger();
             Log.Debug("Debug mode on");
-            try
-            {
-                using (var device = new LcdDevice("COM3", LcdBaudRate.Baud19200))
-                {
-                    device.Connect();
-                    return Parser.Default
-                        .ParseArguments
-                        <MultiFieldOptions, KnightRiderOptions>(
-                                args).MapResult(
-                                    (MultiFieldOptions opts) => MultiFieldDemo.Execute(device, opts),
-                                    (KnightRiderOptions opts) => KnightRiderDemo.Execute(device, opts),
-                                    errs => 1);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return 1;
-            }
+            return Parser.Default
+                .ParseArguments
+                <MultiFieldOptions, KnightRiderOptions>(
+                    args).MapResult(
+                    (MultiFieldOptions opts) => new DemoRunner().Run<MultiFieldDemo, MultiFieldOptions>(opts),
+                    (KnightRiderOptions opts) => new DemoRunner().Run<KnightRiderDemo, KnightRiderOptions>(opts),
+                    errs => 1);
+
         }
     }
 }

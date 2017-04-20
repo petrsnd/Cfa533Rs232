@@ -63,6 +63,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DemoRunner.cs" />
+    <Compile Include="GlobalOptionsBase.cs" />
+    <Compile Include="IDemo.cs" />
     <Compile Include="Demos\KnightRiderDemo.cs" />
     <Compile Include="Demos\MultiFieldDemo.cs" />
     <Compile Include="Program.cs" />

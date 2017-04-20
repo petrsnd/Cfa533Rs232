@@ -16,13 +16,13 @@ namespace Petrsnd.Cfa533Rs232Demo.Demos
     }
     
     [Verb("multifield", HelpText = "Multiple field display, selectable with up and down arrows.")]
-    internal class MultiFieldOptions
+    internal class MultiFieldOptions : GlobalOptionsBase
     {
         [Option(HelpText = "File containing JSON specification of fields")]
         public string File { get; set; }
     }
 
-    internal static class MultiFieldDemo
+    internal class MultiFieldDemo : IDemo<MultiFieldOptions>
     {
         internal class FieldDisplayer
         {
@@ -109,7 +109,7 @@ namespace Petrsnd.Cfa533Rs232Demo.Demos
             }
         }
 
-        public static int Execute(LcdDevice device, MultiFieldOptions opts)
+        public int Run(LcdDevice device, MultiFieldOptions opts)
         {
             Field[] fields;
             if (!string.IsNullOrEmpty(opts.File))

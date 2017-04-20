@@ -6,12 +6,12 @@ using Petrsnd.Cfa533Rs232Driver;
 namespace Petrsnd.Cfa533Rs232Demo.Demos
 {
     [Verb("knightrider", HelpText = "Character tracing around the screen.")]
-    internal class KnightRiderOptions
+    internal class KnightRiderOptions : GlobalOptionsBase
     { }
 
-    internal class KnightRiderDemo
+    internal class KnightRiderDemo : IDemo<KnightRiderOptions>
     {
-        public static int Execute(LcdDevice device, KnightRiderOptions opts)
+        public int Run(LcdDevice device, KnightRiderOptions opts)
         {
             device.ClearScreen();
             int x = 0, y = 0;
@@ -33,13 +33,17 @@ namespace Petrsnd.Cfa533Rs232Demo.Demos
                     x = 0;
                     y--;
                 }
-                device.SendDataToLcd(x, y, "\0\0\0\0");
-                device.SendDataToLcd(oldX, oldY, "    ");
+                if (device.Connected)
+                {
+                    device.SendDataToLcd(x, y, "\0\0\0\0");
+                    device.SendDataToLcd(oldX, oldY, "    ");
+                }
             }, null, 0, 200))
             {
                 Console.WriteLine("Press any key to stop...");
                 Console.ReadKey();
-                device.ClearScreen();
+                if (device.Connected)
+                    device.ClearScreen();
             }
             return 0;
         }
