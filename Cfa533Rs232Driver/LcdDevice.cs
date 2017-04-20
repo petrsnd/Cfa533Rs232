@@ -492,6 +492,10 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// string is specified, the remaining columns of the screen will be cleared.</param>
         public void SetLcdContents(string lineOne, string lineTwo)
         {
+            if (lineOne == null)
+                lineOne = "";
+            if (lineTwo == null)
+                lineTwo = "";
             SendDataToLcd(0, 0, lineOne.PadRight(16, ' '));
             SendDataToLcd(0, 1, lineTwo.PadRight(16, ' '));
         }

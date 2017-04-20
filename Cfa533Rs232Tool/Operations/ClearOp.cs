@@ -4,12 +4,12 @@ using Petrsnd.Cfa533Rs232Driver;
 namespace Petrsnd.Cfa533Rs232Tool.Operations
 {
     [Verb("clear", HelpText = "Clear the screen on the device.")]
-    internal class ClearOptions
+    internal class ClearOptions : GlobalOptionsBase
     { }
 
-    internal static class ClearOp
+    internal class ClearOp : IOp<ClearOptions>
     {
-        public static int Execute(LcdDevice device, ClearOptions opts)
+        public int Run(LcdDevice device, ClearOptions opts)
         {
             device.ClearScreen();
             return 0;

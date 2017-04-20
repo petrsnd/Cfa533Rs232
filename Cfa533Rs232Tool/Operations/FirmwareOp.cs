@@ -5,12 +5,12 @@ using Petrsnd.Cfa533Rs232Driver;
 namespace Petrsnd.Cfa533Rs232Tool.Operations
 {
     [Verb("firmware", HelpText = "Print hardware and firmware version information.")]
-    internal class FirmwareOptions
+    internal class FirmwareOptions : GlobalOptionsBase
     { }
 
-    internal static class FirmwareOp
+    internal class FirmwareOp : IOp<FirmwareOptions>
     {
-        public static int Execute(LcdDevice device, FirmwareOptions opts)
+        public int Run(LcdDevice device, FirmwareOptions opts)
         {
             Console.WriteLine(device.GetHardwareFirmwareVersion());
             return 0;

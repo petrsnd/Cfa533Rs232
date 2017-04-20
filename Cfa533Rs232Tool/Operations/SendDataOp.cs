@@ -4,7 +4,7 @@ using Petrsnd.Cfa533Rs232Driver;
 namespace Petrsnd.Cfa533Rs232Tool.Operations
 {
     [Verb("senddata", HelpText = "Send data to position on LCD screen.")]
-    internal class SendDataOptions
+    internal class SendDataOptions : GlobalOptionsBase
     {
         [Option(HelpText = "Horizontal position / X coordinate / column (0-15)", Required = true)]
         public int Col { get; set; }
@@ -16,9 +16,9 @@ namespace Petrsnd.Cfa533Rs232Tool.Operations
         public string Text { get; set; }
     }
 
-    internal static class SendDataOp
+    internal class SendDataOp : IOp<SendDataOptions>
     {
-        public static int Execute(LcdDevice device, SendDataOptions opts)
+        public int Run(LcdDevice device, SendDataOptions opts)
         {
             device.SendDataToLcd(opts.Col, opts.Row, opts.Text);
             return 0;

@@ -4,12 +4,12 @@ using Petrsnd.Cfa533Rs232Driver;
 namespace Petrsnd.Cfa533Rs232Tool.Operations
 {
     [Verb("setbootstate", HelpText = "Set current state as boot state for device.")]
-    internal class SetBootStateOptions
+    internal class SetBootStateOptions : GlobalOptionsBase
     { }
 
-    internal static class SetBootStateOp
+    internal class SetBootStateOp : IOp<SetBootStateOptions>
     {
-        public static int Execute(LcdDevice device, SetBootStateOptions opts)
+        public int Run(LcdDevice device, SetBootStateOptions opts)
         {
             device.StoreCurrentStateAsBootState();
             return 0;

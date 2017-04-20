@@ -4,14 +4,14 @@ using Petrsnd.Cfa533Rs232Driver;
 namespace Petrsnd.Cfa533Rs232Tool.Operations
 {
     [Verb("setlineone", HelpText = "Set line one contents (deprecated).")]
-    internal class SetLineOneOptions
+    internal class SetLineOneOptions : GlobalOptionsBase
     {
         [Option(HelpText = "Text to display on line one")]
         public string Text { get; set; }
     }
-    internal static class SetLineOneOp
+    internal class SetLineOneOp : IOp<SetLineOneOptions>
     {
-        public static int Execute(LcdDevice device, SetLineOneOptions opts)
+        public int Run(LcdDevice device, SetLineOneOptions opts)
         {
             device.SetLcdLineOneContents(opts.Text);
             return 0;

@@ -9,42 +9,30 @@ namespace Petrsnd.Cfa533Rs232Tool
     {
         public static int Main(string[] args)
         {
-            try
-            {
-                using (var device = new LcdDevice("COM3", LcdBaudRate.Baud19200))
-                {
-                    device.Connect();
-                    return Parser.Default
-                        .ParseArguments
-                        <PingOptions, ListenOptions, FirmwareOptions, ReadUserFlashOptions, WriteUserFlashOptions,
-                            SetBootStateOptions, RebootOptions, ClearOptions, SetLineOneOptions, SetLineTwoOptions,
-                            CursorPositionOptions, CursorStyleOptions, ContrastOptions, BacklightOptions,
-                            SendDataOptions, SetContentsOptions>(
-                                args).MapResult(
-                                    (PingOptions opts) => PingOp.Execute(device, opts),
-                                    (ListenOptions opts) => ListenOp.Execute(device, opts),
-                                    (FirmwareOptions opts) => FirmwareOp.Execute(device, opts),
-                                    (ReadUserFlashOptions opts) => ReadUserFlashOp.Execute(device, opts),
-                                    (WriteUserFlashOptions opts) => WriteUserFlashOp.Execute(device, opts),
-                                    (SetBootStateOptions opts) => SetBootStateOp.Execute(device, opts),
-                                    (RebootOptions opts) => RebootOp.Execute(device, opts),
-                                    (ClearOptions opts) => ClearOp.Execute(device, opts),
-                                    (SetLineOneOptions opts) => SetLineOneOp.Execute(device, opts),
-                                    (SetLineTwoOptions opts) => SetLineTwoOp.Execute(device, opts),
-                                    (CursorPositionOptions opts) => CursorPositionOp.Execute(device, opts),
-                                    (CursorStyleOptions opts) => CursorStyleOp.Execute(device, opts),
-                                    (ContrastOptions opts) => ContrastOp.Execute(device, opts),
-                                    (BacklightOptions opts) => BacklightOp.Execute(device, opts),
-                                    (SendDataOptions opts) => SendDataOp.Execute(device, opts),
-                                    (SetContentsOptions opts) => SetContentsOp.Execute(device, opts),
-                                    errs => 1);
-                }
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine(ex);
-                return 1;
-            }
+            return Parser.Default
+                .ParseArguments
+                <PingOptions, ListenOptions, FirmwareOptions, ReadUserFlashOptions, WriteUserFlashOptions,
+                SetBootStateOptions, RebootOptions, ClearOptions, SetLineOneOptions, SetLineTwoOptions,
+                CursorPositionOptions, CursorStyleOptions, ContrastOptions, BacklightOptions,
+                SendDataOptions, SetContentsOptions>(
+                    args).MapResult(
+                    (PingOptions opts) => new OpRunner().Run<PingOp, PingOptions>(opts),
+                    (ListenOptions opts) => new OpRunner().Run<ListenOp, ListenOptions>(opts),
+                    (FirmwareOptions opts) => new OpRunner().Run<FirmwareOp, FirmwareOptions>(opts),
+                    (ReadUserFlashOptions opts) => new OpRunner().Run<ReadUserFlashOp, ReadUserFlashOptions>(opts),
+                    (WriteUserFlashOptions opts) => new OpRunner().Run<WriteUserFlashOp, WriteUserFlashOptions>(opts),
+                    (SetBootStateOptions opts) => new OpRunner().Run<SetBootStateOp, SetBootStateOptions>(opts),
+                    (RebootOptions opts) => new OpRunner().Run<RebootOp, RebootOptions>(opts),
+                    (ClearOptions opts) => new OpRunner().Run<ClearOp, ClearOptions>(opts),
+                    (SetLineOneOptions opts) => new OpRunner().Run<SetLineOneOp, SetLineOneOptions>(opts),
+                    (SetLineTwoOptions opts) => new OpRunner().Run<SetLineTwoOp, SetLineTwoOptions>(opts),
+                    (CursorPositionOptions opts) => new OpRunner().Run<CursorPositionOp, CursorPositionOptions>(opts),
+                    (CursorStyleOptions opts) => new OpRunner().Run<CursorStyleOp, CursorStyleOptions>(opts),
+                    (ContrastOptions opts) => new OpRunner().Run<ContrastOp, ContrastOptions>(opts),
+                    (BacklightOptions opts) => new OpRunner().Run<BacklightOp, BacklightOptions>(opts),
+                    (SendDataOptions opts) => new OpRunner().Run<SendDataOp, SendDataOptions>(opts),
+                    (SetContentsOptions opts) => new OpRunner().Run<SetContentsOp, SetContentsOptions>(opts),
+                    errs => 1);
         }
     }
 }
