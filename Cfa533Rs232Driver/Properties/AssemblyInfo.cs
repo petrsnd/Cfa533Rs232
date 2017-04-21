@@ -5,9 +5,9 @@ using System.Runtime.InteropServices;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 [assembly: AssemblyTitle("Cfa533Rs232Driver")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyDescription("Driver for CrystalFontz CFA533 family of 16x2 LCD displays")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("Petrsnd.Org")]
 [assembly: AssemblyProduct("Cfa533Rs232Driver")]
 [assembly: AssemblyCopyright("Copyright ©  2017")]
 [assembly: AssemblyTrademark("")]
