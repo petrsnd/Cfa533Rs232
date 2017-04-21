@@ -1,3 +1,5 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/belpoe9qhduusy3j?svg=true)](https://ci.appveyor.com/project/petrsnd/cfa533rs232)
+
 # Cfa533Rs232
 C# Driver for CrystalFontz CFA533 family of 16x2 LCD displays; Developed against the CFA533-TMI-KU
 
