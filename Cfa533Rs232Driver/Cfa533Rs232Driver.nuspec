@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>$id$</id>
+    <version>$version$</version>
+    <title>$title$</title>
+    <authors>$author$</authors>
+    <owners>$author$</owners>
+    <licenseUrl>https://github.com/petrsnd/Cfa533Rs232/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/petrsnd/Cfa533Rs232</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>$description$</description>
+    <releaseNotes>Initial release of the CFA533 RS232 .NET driver. Most of the LCD commands have been implemented in this release, but the host power management and monitoring features have not been implemented.</releaseNotes>
+    <copyright>$copyright$</copyright>
+    <tags>CrystalFontz CFA533 Serial</tags>
+    <dependencies>
+        <dependency id="Serilog" version="2.4.0" />
+    </dependencies>
+  </metadata>
+</package>
