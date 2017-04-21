@@ -3,6 +3,14 @@
 # Cfa533Rs232
 C# Driver for CrystalFontz CFA533 family of 16x2 LCD displays; Developed against the CFA533-TMI-KU
 
+## NuGet
+[Cfa533Rs232Driver](https://www.nuget.org/packages/Cfa533Rs232Driver) package on nuget.org.
+
+To install CrystalFontz CFA533 Serial Driver, run the following command in the [Package Manager Console](https://docs.nuget.org/docs/start-here/using-the-package-manager-console):
+```Powershell
+PM> Install-Package Cfa533Rs232Driver
+```
+
 ## Sources
 There are three projects included in the solution:
 - Cfa533Rs232Driver -- This is the main library that drives the CFA533 via serial port communications.
