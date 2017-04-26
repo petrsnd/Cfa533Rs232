@@ -53,6 +53,7 @@
     <Compile Include="Operations\ListenOp.cs" />
     <Compile Include="Operations\PingOp.cs" />
     <Compile Include="Operations\SendDataOp.cs" />
+    <Compile Include="Operations\SetBaudRateOp.cs" />
     <Compile Include="Operations\SetContentsOp.cs" />
     <Compile Include="OpRunner.cs" />
     <Compile Include="Program.cs" />

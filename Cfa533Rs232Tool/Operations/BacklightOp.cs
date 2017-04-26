@@ -12,6 +12,7 @@ namespace Petrsnd.Cfa533Rs232Tool.Operations
         [Option(HelpText = "Intensity of keypad backlight", Required = true)]
         public int Keypad { get; set; }
     }
+
     internal class BacklightOp : IOp<BacklightOptions>
     {
         public int Run(LcdDevice device, BacklightOptions opts)

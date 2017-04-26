@@ -9,6 +9,7 @@ namespace Petrsnd.Cfa533Rs232Tool.Operations
         [Option(HelpText = "Text to display on line one")]
         public string Text { get; set; }
     }
+
     internal class SetLineOneOp : IOp<SetLineOneOptions>
     {
         public int Run(LcdDevice device, SetLineOneOptions opts)
