@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO.Ports;
+using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Serilog;
@@ -146,23 +147,28 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
 
         private CommandPacket TryParsePacket()
         {
-            try
+            for (var startIndex = 0; startIndex < _readBuffer.Count; startIndex++)
             {
-                var packet = CommandPacketParser.Parse(_readBuffer.ToArray());
-                if (packet == null)
+                try
                 {
-                    Log.Debug("Null packet without error");
-                    return null;
+                    var packet = CommandPacketParser.Parse(_readBuffer.Skip(startIndex).ToArray());
+                    if (packet == null)
+                    {
+                        Log.Debug("Null packet without error");
+                        return null;
+                    }
+                    if (startIndex > 0)
+                        Log.Debug("Removing bad bytes: {BadBytes}",
+                            BitConverter.ToString(_readBuffer.Take(startIndex).ToArray()));
+                    _readBuffer.RemoveFirst(packet.PacketSizeWithCrc + startIndex);
+                    return packet;
                 }
-                for (var i = 0; i < packet.PacketSizeWithCrc; i++)
-                    _readBuffer.Dequeue();
-                return packet;
+                catch (Exception ex)
+                {
+                    Log.Debug("Parse response packet exception: {ParseError}", ex.Message);
+                }
             }
-            catch (Exception ex)
-            {
-                Log.Debug("Parse response packet exception: {ParseError}", ex.Message);
-                return null;
-            }
+            return null;
         }
 
         private void ReadAllAvailableBytes()
