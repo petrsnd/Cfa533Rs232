@@ -9,14 +9,14 @@ namespace Petrsnd.Cfa533Rs232Tool
         {
             return Parser.Default
                 .ParseArguments
-                <PingOptions, ListenOptions, FirmwareOptions, ReadUserFlashOptions, WriteUserFlashOptions,
+                <SetBaudRateOptions, PingOptions, ListenOptions, ReadUserFlashOptions, WriteUserFlashOptions,
                 SetBootStateOptions, RebootOptions, ClearOptions, SetLineOneOptions, SetLineTwoOptions,
                 CursorPositionOptions, CursorStyleOptions, ContrastOptions, BacklightOptions,
                 SendDataOptions, SetContentsOptions>(
                     args).MapResult(
+                    (SetBaudRateOptions opts) => new OpRunner().Run<SetBaudRateOp, SetBaudRateOptions>(opts),
                     (PingOptions opts) => new OpRunner().Run<PingOp, PingOptions>(opts),
                     (ListenOptions opts) => new OpRunner().Run<ListenOp, ListenOptions>(opts),
-                    (FirmwareOptions opts) => new OpRunner().Run<FirmwareOp, FirmwareOptions>(opts),
                     (ReadUserFlashOptions opts) => new OpRunner().Run<ReadUserFlashOp, ReadUserFlashOptions>(opts),
                     (WriteUserFlashOptions opts) => new OpRunner().Run<WriteUserFlashOp, WriteUserFlashOptions>(opts),
                     (SetBootStateOptions opts) => new OpRunner().Run<SetBootStateOp, SetBootStateOptions>(opts),

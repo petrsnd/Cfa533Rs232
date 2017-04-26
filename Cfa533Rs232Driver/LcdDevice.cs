@@ -176,6 +176,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <param name="op">Currently the only supported operation is RebootLcd.</param>
         public void SendPowerOperation(PowerOperation op)
         {
+            ThrowIfNotConnected();
             switch (op)
             {
                 case PowerOperation.RebootLcd:
@@ -249,6 +250,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <param name="data">The 8 byte bitmap of the new font for this character.</param>
         public void SetSpecialCharacterData(int index, byte[] data)
         {
+            ThrowIfNotConnected();
             if (index < 0 || index > 7)
                 throw new ArgumentException("Special character index must be 0 - 7", nameof(index));
             var buffer = Enumerable.Repeat((byte)0x00, 9).ToArray();
@@ -273,6 +275,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <returns>8 bytes of memory from the specified location.</returns>
         public Tuple<byte, byte[]> ReadMemoryForDebug(byte address)
         {
+            ThrowIfNotConnected();
             if (address < 0x40 || address > 0xCF)
                 throw new ArgumentException("Valid addresses are between 0x40 and 0xCF", nameof(address));
             var command = new CommandPacket(CommandType.ReadMemoryForDebug, 1, new[] {address});
@@ -290,6 +293,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <param name="row">Row index, 0 - 1.</param>
         public void SetCursorPosition(int column, int row)
         {
+            ThrowIfNotConnected();
             if (column < 0 || column > 15)
                 throw new ArgumentException("Column index must be 0 - 15", nameof(column));
             if (row < 0 || row > 1)
@@ -306,6 +310,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <param name="style">Style to set.</param>
         public void SetCursorStyle(CursorStyle style)
         {
+            ThrowIfNotConnected();
             if (!Enum.IsDefined(typeof(CursorStyle), style))
                 throw new ArgumentException("Must specify a valid cursor style", nameof(style));
             var buffer = new[] {(byte)style};
@@ -327,6 +332,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <param name="contrast">Integer value of the contrast, 0 - 50.</param>
         public void SetContrast(int contrast)
         {
+            ThrowIfNotConnected();
             if (contrast < 0 || contrast > 200)
                 throw new ArgumentException("Contrast must be 0 - 200, only 0 - 50 are useful", nameof(contrast));
             var buffer = new[] {(byte)contrast};
@@ -346,6 +352,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <param name="keypadBrightness">The brightness level of the LCD device keypad, 0 -100.</param>
         public void SetBacklight(int lcdBrightness, int keypadBrightness)
         {
+            ThrowIfNotConnected();
             if (lcdBrightness < 0 || lcdBrightness > 100)
                 throw new ArgumentException("LCD brightness must be 0 - 100", nameof(lcdBrightness));
             if (keypadBrightness < 0 || keypadBrightness > 100)
@@ -363,6 +370,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <returns></returns>
         public byte[] ReadDowDeviceInformation(int deviceIndex)
         {
+            ThrowIfNotConnected();
             throw new NotImplementedException();
         }
 
@@ -372,6 +380,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <param name="data"></param>
         public void SetUpTemperatureReporting(byte[] data)
         {
+            ThrowIfNotConnected();
             throw new NotImplementedException();
         }
 
@@ -382,6 +391,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <param name="data"></param>
         public void ArbitraryDowTransaction(int deviceIndex, byte[] data)
         {
+            ThrowIfNotConnected();
             throw new NotImplementedException();
         }
 
@@ -398,6 +408,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         public void SetUpLiveTemperatureDisplay(int displaySlot, TemperatureDisplayItemType type, int deviceIndex,
             int numberOfDigits, int column, int row, TemperatureUnits units)
         {
+            ThrowIfNotConnected();
             throw new NotImplementedException();
         }
 
@@ -408,6 +419,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <param name="data"></param>
         public void SendCommandToController(LocationCode code, byte data)
         {
+            ThrowIfNotConnected();
             throw new NotImplementedException();
         }
 
@@ -418,6 +430,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <param name="upMask"></param>
         public void ConfigureKeyReporting(byte pressMask, byte upMask)
         {
+            ThrowIfNotConnected();
             throw new NotImplementedException();
         }
 
@@ -427,6 +440,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <returns></returns>
         public Tuple<byte, byte, byte> ReadKeypadPolled()
         {
+            ThrowIfNotConnected();
             throw new NotImplementedException();
         }
 
@@ -435,6 +449,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// </summary>
         public void SetAtxSwitchFunctionality()
         {
+            ThrowIfNotConnected();
             throw new NotImplementedException();
         }
 
@@ -443,6 +458,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// </summary>
         public void HostWatchdogReset()
         {
+            ThrowIfNotConnected();
             throw new NotImplementedException();
         }
 
@@ -452,6 +468,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <returns></returns>
         public byte[] ReadReportingAtxWatchdog()
         {
+            ThrowIfNotConnected();
             throw new NotImplementedException();
         }
 
@@ -465,6 +482,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <param name="data">String to write at the specified location.</param>
         public void SendDataToLcd(int column, int row, string data)
         {
+            ThrowIfNotConnected();
             if (column < 0 || column > 15)
                 throw new ArgumentException("Column index must be 0 - 15", nameof(column));
             if (row < 0 || row > 1)
@@ -492,6 +510,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// string is specified, the remaining columns of the screen will be cleared.</param>
         public void SetLcdContents(string lineOne, string lineTwo)
         {
+            ThrowIfNotConnected();
             if (lineOne == null)
                 lineOne = "";
             if (lineTwo == null)
@@ -510,8 +529,14 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// <param name="baudRate">Only 9600, 19200, and 115200 are supported</param>
         public void SetBaudRate(LcdBaudRate baudRate)
         {
+            ThrowIfNotConnected();
             _baudRate = ConvertLcdBaudRateToInt(baudRate);
-            throw new NotImplementedException();
+            var command = new CommandPacket(CommandType.SetBaudRate, 1,
+                new[] {(byte) (baudRate == LcdBaudRate.Baud19200 ? 0 : 1)});
+            var response = _deviceConnection?.SendReceive(command);
+            VerifyResponsePacket(response, CommandType.SetBaudRate);
+            Disconnect();
+            Connect();
         }
 
         /// <summary>
@@ -519,6 +544,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// </summary>
         public void ConfigureGpio()
         {
+            ThrowIfNotConnected();
             throw new NotImplementedException();
         }
 
@@ -527,6 +553,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// </summary>
         public void ReadGpioPinLevelsAndState()
         {
+            ThrowIfNotConnected();
             throw new NotImplementedException();
         }
 
