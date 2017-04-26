@@ -1,4 +1,6 @@
-﻿namespace Petrsnd.Cfa533Rs232Driver.Internal
+﻿using System.Collections.Generic;
+
+namespace Petrsnd.Cfa533Rs232Driver.Internal
 {
     internal static class InternalExtensions
     {
@@ -27,6 +29,12 @@
                 default:
                     return KeyFlags.Cancel;
             }
+        }
+
+        public static void RemoveFirst<T>(this Queue<T> queue, int count)
+        {
+            for (var i = 0; i < count && queue.Count > 0; i++)
+                queue.Dequeue();
         }
     }
 }
