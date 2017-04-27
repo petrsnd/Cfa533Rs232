@@ -41,6 +41,8 @@ namespace Petrsnd.Cfa533Rs232Demo.Demos
             {
                 if (text.Length <= 16)
                     return text;
+                if (_colIndex < 0)
+                    _colIndex = 0;
                 var index = _colIndex;
                 if (text.Length - _colIndex < 16)
                     index = text.Length - 16;

@@ -526,7 +526,7 @@ namespace Petrsnd.Cfa533Rs232Driver
         /// Calling this method basically results in a reconnect of the serial port.  The command
         /// is acknowledged and then the connection is reopened with the new baud rate.
         /// </remarks>
-        /// <param name="baudRate">Only 9600, 19200, and 115200 are supported</param>
+        /// <param name="baudRate">Only 9600 and 115200 are supported</param>
         public void SetBaudRate(LcdBaudRate baudRate)
         {
             ThrowIfNotConnected();
