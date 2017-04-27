@@ -15,7 +15,9 @@
     <copyright>$copyright$</copyright>
     <tags>CrystalFontz CFA533 RS232 Serial</tags>
     <dependencies>
-        <dependency id="Serilog" version="2.4.0" />
+        <group targetFramework="net46">
+            <dependency id="Serilog" version="2.4.0" />
+        </group>
     </dependencies>
   </metadata>
 </package>
