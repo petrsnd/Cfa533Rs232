@@ -203,8 +203,10 @@ namespace Petrsnd.Cfa533Rs232Driver.Internal
                     {
                         var action = (KeypadAction)packet.Data[0];
                         Log.Debug("RESP: Keypad event: {KeypadEvent}", action);
-                        KeypadActivity?.BeginInvoke(this,
-                            new KeypadActivityEventArgs(action.ConvertToKeyFlags(), action), null, null);
+                        Task.Run(() =>
+                        {
+                           KeypadActivity?.Invoke(this, new KeypadActivityEventArgs(action.ConvertToKeyFlags(), action));
+                        });
                     }
                     // TODO: handle temperature report with event
                     break;
