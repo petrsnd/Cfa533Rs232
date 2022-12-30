@@ -1,78 +1,12 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="14.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D4265574-93AF-4C7A-B6C9-83C1A6B3C245}</ProjectGuid>
+    <TargetFramework>netstandard2.0</TargetFramework>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Petrsnd.Cfa533Rs232Driver</RootNamespace>
-    <AssemblyName>Cfa533Rs232Driver</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <TargetFrameworkProfile />
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Serilog, Version=2.0.0.0, Culture=neutral, PublicKeyToken=24c2f752a8e58a10, processorArchitecture=MSIL">
-      <HintPath>..\packages\Serilog.2.4.0\lib\net46\Serilog.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
+    <PackageReference Include="Serilog" Version="2.12.0" />
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="CursorStyle.cs" />
-    <Compile Include="ILcdDevice.cs" />
-    <Compile Include="PacketParseException.cs" />
-    <Compile Include="DeviceConnectionException.cs" />
-    <Compile Include="DeviceCommandException.cs" />
-    <Compile Include="DeviceTimeoutException.cs" />
-    <Compile Include="DeviceResponseException.cs" />
-    <Compile Include="Internal\CommandPacket.cs" />
-    <Compile Include="Internal\CommandPacketParser.cs" />
-    <Compile Include="Internal\CommandPacketResponseReceivedEventArgs.cs" />
-    <Compile Include="Internal\CommandType.cs" />
-    <Compile Include="Internal\InternalExtensions.cs" />
-    <Compile Include="Internal\PacketType.cs" />
-    <Compile Include="Internal\Cfa533Rs232Connection.cs" />
-    <Compile Include="KeyFlags.cs" />
-    <Compile Include="KeypadAction.cs" />
-    <Compile Include="KeypadActivityEventArgs.cs" />
-    <Compile Include="LcdBaudRate.cs" />
-    <Compile Include="LcdDevice.cs" />
-    <Compile Include="LocationCode.cs" />
-    <Compile Include="PowerOperation.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="TemperatureDisplayItemType.cs" />
-    <Compile Include="TemperatureUnits.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
-       Other similar extension points exist, see Microsoft.Common.targets.
-  <Target Name="BeforeBuild">
-  </Target>
-  <Target Name="AfterBuild">
-  </Target>
-  -->
 </Project>

@@ -10,7 +10,7 @@ namespace Petrsnd.Cfa533Rs232Demo
         {
             Log.Logger = new LoggerConfiguration()
                 .Enrich.WithThreadId()
-                .WriteTo.LiterateConsole(outputTemplate:
+                .WriteTo.Console(outputTemplate:
                     "{Timestamp:HH:mm:ss.ffff} [{Level:u3}] ({ThreadId}) {Message}{NewLine}{Exception}")
                 .MinimumLevel.Debug()
                 .CreateLogger();
