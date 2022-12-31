@@ -15,11 +15,6 @@
     <releaseNotes>CFA533 RS232 .NET driver. Most of the LCD commands have been implemented in this release, but the host power management and monitoring features have not been implemented.</releaseNotes>
     <copyright>$copyright$</copyright>
     <tags>CrystalFontz CFA533 RS232 Serial</tags>
-    <dependencies>
-        <group targetFramework="net46">
-            <dependency id="Serilog" version="2.4.0" />
-        </group>
-    </dependencies>
   </metadata>
   <files>
     <file src="..\README.md" target="\" />
