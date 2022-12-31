@@ -1,13 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.25420.1
+# Visual Studio Version 17
+VisualStudioVersion = 17.4.33205.214
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cfa533Rs232Driver", "Cfa533Rs232Driver\Cfa533Rs232Driver.csproj", "{D4265574-93AF-4C7A-B6C9-83C1A6B3C245}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cfa533Rs232Driver", "Cfa533Rs232Driver\Cfa533Rs232Driver.csproj", "{D4265574-93AF-4C7A-B6C9-83C1A6B3C245}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cfa533Rs232Tool", "Cfa533Rs232Tool\Cfa533Rs232Tool.csproj", "{655A95BC-E1BD-46B0-AE02-79518F2DEDC2}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cfa533Rs232Tool", "Cfa533Rs232Tool\Cfa533Rs232Tool.csproj", "{655A95BC-E1BD-46B0-AE02-79518F2DEDC2}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cfa533Rs232Demo", "Cfa533Rs232Demo\Cfa533Rs232Demo.csproj", "{144CED77-D7C7-4884-BF73-6FE93AE83C2F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Cfa533Rs232Demo", "Cfa533Rs232Demo\Cfa533Rs232Demo.csproj", "{144CED77-D7C7-4884-BF73-6FE93AE83C2F}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2BDC3F2A-F5C9-4E01-A514-7B7CEB4C4EC0}"
+	ProjectSection(SolutionItems) = preProject
+		appveyor.yml = appveyor.yml
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +35,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {7DD04745-9BAD-4BEF-80A4-CDB98100C85D}
 	EndGlobalSection
 EndGlobal
