@@ -4,11 +4,14 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Petrsnd.Cfa533Rs232Driver</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <Authors>petrsnd@gmail.com</Authors>
+    <Company>petrsnd</Company>
+    <Copyright>(c) 2022 Daniel F. Peterson &lt;petrsnd@gmail.com&gt;</Copyright>
+    <Description>C# Driver for CrystalFontz CFA533 family of 16x2 LCD displays, RS232 inteface; Developed against the CFA533-TMI-KU</Description>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
     <PackageReference Include="Serilog" Version="2.12.0" />
-    <None Include="..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 </Project>
