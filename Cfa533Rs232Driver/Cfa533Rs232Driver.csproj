@@ -20,10 +20,12 @@
     <PackageReleaseNotes>CFA533 RS232 .NET Standard 2.0 driver. Most of the LCD commands have been implemented in this release, but the host power management and monitoring features have not been implemented.</PackageReleaseNotes>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
   </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
     <PackageReference Include="Serilog" Version="2.12.0" />
   </ItemGroup>
+
   <ItemGroup>
     <None Include="..\Cfa533Rs232.png" Link="Cfa533Rs232.png" Pack="true" PackagePath="Content\images\" />
   </ItemGroup>

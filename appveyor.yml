@@ -15,7 +15,6 @@ before_build:
 - ps: nuget restore Cfa533Rs232.sln
 build:
   publish_nuget: true
-  include_nuget_references: true
   verbosity: normal
 deploy:
 - provider: NuGet
