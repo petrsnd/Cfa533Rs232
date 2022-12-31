@@ -4,9 +4,11 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Petrsnd.Cfa533Rs232Driver</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
     <PackageReference Include="Serilog" Version="2.12.0" />
+    <None Include="..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 </Project>
