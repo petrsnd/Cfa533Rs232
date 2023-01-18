@@ -4,9 +4,39 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Petrsnd.Cfa533Rs232Driver</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Version>9999.9999.9999</Version>
+    <AssemblyVersion>9999.9999.9999</AssemblyVersion>
+    <FileVersion>9999.9999.9999</FileVersion>
+    <Authors>petrsnd@gmail.com</Authors>
+    <Company>petrsnd</Company>
+    <Copyright>(c) 2023 Daniel F. Peterson &lt;petrsnd@gmail.com&gt;</Copyright>
+    <Description>C# Driver for CrystalFontz CFA533 family of 16x2 LCD displays, RS232 inteface; Developed against the CFA533-TMI-KU</Description>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageProjectUrl>https://github.com/petrsnd/Cfa533Rs232</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/petrsnd/Cfa533Rs232</RepositoryUrl>
+    <PackageIcon>Content\images\Cfa533Rs232.png</PackageIcon>
+    <PackageTags>CrystalFontz;CFA533;RS232;serial;netstandard;dotnet-standard</PackageTags>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <RepositoryType>git</RepositoryType>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <PackageReleaseNotes>Updated to .NET Standard 2.0! CFA533 RS232 driver. Most of the LCD commands have been implemented. The host power management and monitoring features have not been implemented.</PackageReleaseNotes>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
   </PropertyGroup>
+  
   <ItemGroup>
     <PackageReference Include="Microsoft.Windows.Compatibility" Version="7.0.0" />
     <PackageReference Include="Serilog" Version="2.12.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\Cfa533Rs232.png" Link="Cfa533Rs232.png" Pack="true" PackagePath="Content\images\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="..\LICENSE">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
   </ItemGroup>
 </Project>

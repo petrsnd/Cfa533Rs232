@@ -12,6 +12,9 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{2BDC3F2A-F5C9-4E01-A514-7B7CEB4C4EC0}"
 	ProjectSection(SolutionItems) = preProject
 		appveyor.yml = appveyor.yml
+		Cfa533Rs232.ico = Cfa533Rs232.ico
+		Cfa533Rs232.png = Cfa533Rs232.png
+		README.md = README.md
 	EndProjectSection
 EndProject
 Global

@@ -1,7 +1,11 @@
 [![Build status](https://ci.appveyor.com/api/projects/status/belpoe9qhduusy3j?svg=true)](https://ci.appveyor.com/project/petrsnd/cfa533rs232)
+[![nuget](https://img.shields.io/nuget/vpre/Cfa533Rs232Driver)](https://www.nuget.org/packages/Cfa533Rs232Driver)
+[![License](https://img.shields.io/github/license/petrsnd/Cfa533Rs232)](https://github.com/petrsnd/Cfa533Rs232/blob/master/LICENSE)
 
 # Cfa533Rs232
-C# Driver for CrystalFontz CFA533 family of 16x2 LCD displays; Developed against the CFA533-TMI-KU
+C# Driver for CrystalFontz CFA533 family of 16x2 LCD displays, RS232 inteface; Developed against the CFA533-TMI-KU
+
+1.0 update was to support .NET Standard 2.0!
 
 ## NuGet
 [Cfa533Rs232Driver](https://www.nuget.org/packages/Cfa533Rs232Driver) package on nuget.org.
