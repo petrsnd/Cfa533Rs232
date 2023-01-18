@@ -4,6 +4,9 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Petrsnd.Cfa533Rs232Driver</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <Version>9999.9999.9999</Version>
+    <AssemblyVersion>9999.9999.9999</AssemblyVersion>
+    <FileVersion>9999.9999.9999</FileVersion>
     <Authors>petrsnd@gmail.com</Authors>
     <Company>petrsnd</Company>
     <Copyright>(c) 2023 Daniel F. Peterson &lt;petrsnd@gmail.com&gt;</Copyright>
