@@ -12,6 +12,7 @@
     <Copyright>(c) 2023 Daniel F. Peterson &lt;petrsnd@gmail.com&gt;</Copyright>
     <Description>C# Driver for CrystalFontz CFA533 family of 16x2 LCD displays, RS232 inteface; Developed against the CFA533-TMI-KU</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/petrsnd/Cfa533Rs232</PackageProjectUrl>
     <RepositoryUrl>https://github.com/petrsnd/Cfa533Rs232</RepositoryUrl>
     <PackageIcon>Content\images\Cfa533Rs232.png</PackageIcon>
