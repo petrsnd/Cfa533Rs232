@@ -10,7 +10,7 @@
     <Authors>petrsnd@gmail.com</Authors>
     <Company>petrsnd</Company>
     <Copyright>(c) 2023 Daniel F. Peterson &lt;petrsnd@gmail.com&gt;</Copyright>
-    <Description>C# Driver for CrystalFontz CFA533 family of 16x2 LCD displays, RS232 inteface; Developed against the CFA533-TMI-KU</Description>
+    <Description>C# Driver for CrystalFontz CFA533 family of 16x2 LCDs, RS232 interface; Developed against the CFA533-TMI-KU</Description>
     <PackageLicenseFile>LICENSE</PackageLicenseFile>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageProjectUrl>https://github.com/petrsnd/Cfa533Rs232</PackageProjectUrl>
@@ -21,13 +21,17 @@
     <RepositoryType>git</RepositoryType>
     <IncludeSymbols>true</IncludeSymbols>
     <SymbolPackageFormat>snupkg</SymbolPackageFormat>
-    <PackageReleaseNotes>Updated to .NET Standard 2.0! CFA533 RS232 driver. Most of the LCD commands have been implemented. The host power management and monitoring features have not been implemented.</PackageReleaseNotes>
+    <PackageReleaseNotes>
+- Updated Nuget packages
+- Updated demo and test tool targets to .NET 8
+- Minor code issues and typos
+    </PackageReleaseNotes>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
   </PropertyGroup>
   
   <ItemGroup>
-    <PackageReference Include="Microsoft.Windows.Compatibility" Version="8.0.1" />
-    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Microsoft.Windows.Compatibility" Version="9.0.3" />
+    <PackageReference Include="Serilog" Version="4.2.0" />
   </ItemGroup>
 
   <ItemGroup>
